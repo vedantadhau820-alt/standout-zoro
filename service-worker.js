@@ -20,9 +20,6 @@ const APP_SHELL = [
   "/index.html",
   "/manifest.json",
 
-  "/widget.js",
-  "/widget.html",
-
   // CSS
   "/CSS/base.css",
   "/CSS/buttons.css",

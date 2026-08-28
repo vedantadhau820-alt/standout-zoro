@@ -236,10 +236,6 @@ const BACKGROUND_ASSETS = [
   "/Images/A44.jpg",
   "/Images/A45.jpg",
 
-  // E
-  "/Images/E1.jpg",
-  "/Images/E2.jpg",
-
   //w
   "/Images/w1.jpg",
   // Sounds

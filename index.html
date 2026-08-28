@@ -17,12 +17,15 @@
     <!-- Stylesheet will be injected in Message 2 -->
     <link rel="stylesheet" href="CSS/base.css">
     <link rel="stylesheet" href="CSS/buttons.css">
-<link rel="stylesheet" href="CSS/components.css">
+    <link rel="stylesheet" href="CSS/components.css">
     <link rel="stylesheet" href="CSS/account.css">
     <link rel="stylesheet" href="CSS/timer.css">
-<link rel="stylesheet" href="CSS/features.css">
-<link rel="stylesheet" href="CSS/effects.css">
-    
+    <link rel="stylesheet" href="CSS/features.css">
+    <link rel="stylesheet" href="CSS/effects.css">
+    <link rel="stylesheet" href="CSS/momentum.css">
+    <link rel="stylesheet" href="CSS/monthly-report.css">
+    <link rel="stylesheet" href="CSS/badges.css">
+
 </head>
 
 <body>
@@ -32,13 +35,12 @@
     <nav class="top-navbar">
         <div class="nav-left">Stand Out</div>
         <div class="nav-right">
-            <!-- Tools 
-            <div id="toolIcon" style="margin-right:1.4rem; cursor:pointer;">
-    <i class="fas fa-toolbox" style="font-size:22px; color:#3B82F6;"></i>
-            </div>-->
             <!-- 🃏 Marketplace Icon -->
             <div id="marketplaceIcon" style="position: relative; margin-right: 1.4rem; cursor:pointer;">
                 <i class="fas fa-layer-group" style="font-size:22px; color:#3B82F6;"></i>
+            </div>
+            <div id="monthlyReportIcon" style="position: relative; margin-right: 1.4rem; cursor:pointer;">
+                <i class="fas fa-chart-line" style="font-size:22px; color:#3B82F6;"></i>
             </div>
             <!-- ⏱ Fullscreen Timer Icon -->
             <div id="timerIcon" style="position: relative; margin-right: 1.4rem; cursor:pointer;">
@@ -64,7 +66,7 @@
                 </span>
             </div>
 
-            <img src="icon.jpeg" alt="Profile" class="nav-img">
+            <img src="icon.jpeg" alt="Profile" class="nav-img" id="monthlyBadgeNavBtn">
             <input type="file" id="importProgressFile" accept=".json" hidden>
         </div>
     </nav>
@@ -111,9 +113,26 @@
        Missions Section
   ============================ -->
     <section id="missions" class="active">
-        <h2>Missions</h2>
-        <p>Improvement Points: <span id="missionCounter">0</span></p>
+
+        <div class="missions-header">
+
+            <div class="missions-title">
+                <h2>Missions</h2>
+
+                <p>
+                    Improvement Points:
+                    <span id="missionCounter">0</span>
+                </p>
+            </div>
+
+            <div id="momentum-slot"></div>
+
+        </div>
+
+        <div id="momentum-panel-slot"></div>
+
         <ul id="mission-list"></ul>
+
     </section>
 
     <!-- Floating Add Button -->
@@ -126,6 +145,7 @@
     <section id="skillset">
         <h2>Skillset</h2>
         <div id="skill-list"></div>
+        <!--<button class="skill-level" onclick="increaseSkillXP('Grade', 50)">+50 XP</button>-->
     </section>
 
     <section id="marketplace-cards">
@@ -134,37 +154,23 @@
             Spend Improvement Points to mint proof of discipline.
         </p>
 
+        <!-- Filter Tabs -->
+        <div class="card-filters">
+            <button class="active">All</button>
+            <button>w</button>
+            <!--<button>SS</button>-->
+            <button>S</button>
+            <button>A</button>
+            <button>B</button>
+            <button>C</button>
+            <button>D</button>
+            <button>E</button>
+        </div>
 
-      <!-- Filter Tabs -->
-        <!-- NEW TOGGLE BAR --
-<div class="card-filters" id="toolToggleBar">
-    <button id="tabCards" class="active" onclick="openMarketplace()">Cards</button>
-    <button id="tabTools" onclick="openTools()">Tools</button>
-</div>-->
-
-<!-- YOUR ORIGINAL GRADE FILTERS (UNCHANGED) -->
-<div class="card-filters" id="gradeFilterBar">
-    <button class="active">All</button>
-    <button>w</button>
-    <button>SS</button>
-    <button>S</button>
-    <button>X</button>
-    <button>A</button>
-    <button>B</button>
-    <button>C</button>
-    <button>D</button>
-</div>
         <!-- Card Grid -->
         <div class="card-grid" id="cardShop"></div>
     </section>
 
-    <section id="tools" style="display:none;">
-  <h2>Tools & Boosters</h2>
-  <p class="marketplace-sub">Use your Improvement Points to unlock powerful utilities.</p>
-
-  <div class="tool-grid" id="toolShop"></div>
-    </section>
-    
     <!-- <div class="flex-card grade-s locked">
     <img src="cards/iron_discipline.jpg" alt="Iron Discipline">
 
@@ -180,31 +186,26 @@
     </div>
 </div> -->
     <div id="cheatModal" class="cheat-modal">
-  <div class="cheat-box">
-    <div class="cheat-header">
-      🧪 Developer Access
-    </div>
+        <div class="cheat-box">
+            <div class="cheat-header">
+                🧪 Developer Access
+            </div>
 
-    <p class="cheat-subtext">
-      Long-press detected. Enter authorization code.
-    </p>
+            <p class="cheat-subtext">
+                Long-press detected. Enter authorization code.
+            </p>
 
-    <input 
-      id="cheatInput" 
-      class="cheat-input"
-      placeholder="Enter cheat code"
-      autocomplete="off"
-    >
+            <input id="cheatInput" class="cheat-input" placeholder="Enter cheat code" autocomplete="off">
 
-    <div class="cheat-actions">
-      <button class="cheat-confirm" onclick="confirmCheat()">Unlock</button>
-      <button class="cheat-cancel" onclick="closeCheatModal()">Cancel</button>
-    </div>
+            <div class="cheat-actions">
+                <button class="cheat-confirm" onclick="confirmCheat()">Unlock</button>
+                <button class="cheat-cancel" onclick="closeCheatModal()">Cancel</button>
+            </div>
 
-      <button onclick="skipDayCheat()" class="cheat-btn">
-  ⏭ Skip Day
-      </button>
-  </div>
+            <button onclick="skipDayCheat()" class="cheat-btn">
+                ⏭ Skip Day
+            </button>
+        </div>
     </div>
 
     <!-- ===========================
@@ -219,6 +220,7 @@
     <!-- ===========================
        Time / Countdown Section
   ============================ -->
+
     <section id="time">
         <h2>Time</h2>
         <p>Countdowns: <span id="countdownCounter">0</span></p>
@@ -226,39 +228,974 @@
     </section>
 
 
+    <!-- =================================================
+     MONTHLY REPORT
+================================================== -->
+
+    <section id="monthlyReport" class="monthly-report-section">
+
+        <div class="monthly-summary-card">
+
+            <div class="monthly-summary-header">
+
+                <div>
+                    <span class="monthly-report-eyebrow">
+                        MONTHLY SUMMARY
+                    </span>
+
+                    <h3 id="monthlySummaryTitle">
+                        August
+                    </h3>
+                </div>
+
+            </div>
+
+
+            <p id="monthlySummaryText" class="monthly-summary-text">
+                No summary available yet.
+            </p>
+
+
+            <div class="monthly-summary-metrics">
+
+                <div class="monthly-summary-metric">
+
+                    <strong id="monthlySummaryCompletion">
+                        0%
+                    </strong>
+
+                    <span>
+                        Mission Completion
+                    </span>
+
+                </div>
+
+
+                <div class="monthly-summary-metric">
+
+                    <strong id="monthlySummaryConsistency">
+                        0%
+                    </strong>
+
+                    <span>
+                        Consistency
+                    </span>
+
+                </div>
+
+
+                <div class="monthly-summary-metric">
+
+                    <strong id="monthlySummaryGoals">
+                        0/0
+                    </strong>
+
+                    <span>
+                        Goals
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="monthly-report-shell">
+
+            <!-- =================================================
+             MONTH OVERVIEW
+        ================================================== -->
+
+            <div class="monthly-overview">
+
+                <div class="monthly-consistency">
+
+                    <span id="monthlyConsistency" class="monthly-consistency-value">
+                        0%
+                    </span>
+
+                    <span class="monthly-consistency-label">
+                        CONSISTENCY
+                    </span>
+
+                </div>
+
+
+
+
+                <div class="monthly-overview-stats">
+
+                    <div class="monthly-stat">
+                        <strong id="monthlyCompleted">
+                            0
+                        </strong>
+
+                        <span>
+                            Missions Completed
+                        </span>
+                    </div>
+
+
+                    <div class="monthly-stat">
+                        <strong id="monthlyMissed">
+                            0
+                        </strong>
+
+                        <span>
+                            Missions Missed
+                        </span>
+                    </div>
+
+
+                    <div class="monthly-stat">
+                        <strong id="monthlyActiveDays">
+                            0
+                        </strong>
+
+                        <span>
+                            Active Days
+                        </span>
+                    </div>
+
+
+                    <div class="monthly-stat">
+                        <strong id="monthlyImprovementPoints">
+                            0
+                        </strong>
+
+                        <span>
+                            Improvement Points
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             ACTIVITY CALENDAR
+        ================================================== -->
+
+            <div class="monthly-report-section">
+
+                <div class="monthly-section-header">
+
+                    <span class="monthly-report-eyebrow">
+                        ACTIVITY
+                    </span>
+
+                    <h3>
+                        Activity Calendar
+                    </h3>
+
+                    <p>
+                        The days you showed up.
+                    </p>
+
+                </div>
+
+
+                <div id="monthlyActivityCalendar" class="monthly-activity-calendar"></div>
+
+
+                <div class="monthly-calendar-legend">
+
+                    <span>
+                        <i class="calendar-dot active"></i>
+                        Active
+                    </span>
+
+                    <span>
+                        <i class="calendar-dot partial"></i>
+                        Partial
+                    </span>
+
+                    <span>
+                        <i class="calendar-dot missed"></i>
+                        Missed
+                    </span>
+
+                    <span>
+                        <i class="calendar-dot empty"></i>
+                        No activity
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             CONSISTENCY GRAPH
+        ================================================== -->
+
+            <div class="monthly-report-section">
+
+                <div class="monthly-section-header">
+
+                    <span class="monthly-report-eyebrow">
+                        CONSISTENCY
+                    </span>
+
+                    <h3>
+                        Performance Trend
+                    </h3>
+
+                    <p>
+                        Your daily mission consistency.
+                    </p>
+
+                </div>
+
+
+                <div class="monthly-consistency-chart">
+
+                    <div id="monthlyConsistencyChart" class="consistency-chart"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             MISSION PERFORMANCE
+        ================================================== -->
+
+            <div class="monthly-report-section">
+
+                <div class="monthly-section-header">
+
+                    <span class="monthly-report-eyebrow">
+                        MISSIONS
+                    </span>
+
+                    <h3>
+                        Mission Performance
+                    </h3>
+
+                    <p>
+                        How you performed across your missions.
+                    </p>
+
+                </div>
+
+
+                <div class="mission-performance-card">
+
+                    <div class="mission-performance-main">
+
+                        <span id="missionCompletionRate" class="mission-completion-rate">
+                            0%
+                        </span>
+
+                        <span class="mission-completion-label">
+                            COMPLETION RATE
+                        </span>
+
+                    </div>
+
+
+                    <div class="mission-performance-stats">
+
+                        <div class="mission-performance-stat">
+
+                            <strong id="missionPerformanceCompleted">
+                                0
+                            </strong>
+
+                            <span>
+                                Completed
+                            </span>
+
+                        </div>
+
+
+                        <div class="mission-performance-stat">
+
+                            <strong id="missionPerformanceMissed">
+                                0
+                            </strong>
+
+                            <span>
+                                Missed
+                            </span>
+
+                        </div>
+
+
+                        <div class="mission-performance-stat">
+
+                            <strong id="missionPerformanceTotal">
+                                0
+                            </strong>
+
+                            <span>
+                                Total
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mission-type-stats">
+
+                        <div class="mission-type-stat">
+
+                            <strong id="missionHardcoreCount">
+                                0
+                            </strong>
+
+                            <span>
+                                Hardcore
+                            </span>
+
+                        </div>
+
+
+                        <div class="mission-type-stat">
+
+                            <strong id="missionRecurringCount">
+                                0
+                            </strong>
+
+                            <span>
+                                Recurring
+                            </span>
+
+                        </div>
+
+
+                        <div class="mission-type-stat">
+
+                            <strong id="missionOneTimeCount">
+                                0
+                            </strong>
+
+                            <span>
+                                One-Time
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="monthly-report-section">
+
+                <div class="monthly-section-header">
+
+                    <span class="monthly-report-eyebrow">
+                        GOALS
+                    </span>
+
+                    <h3>
+                        Goals Progress
+                    </h3>
+
+                    <p>
+                        The goals you completed this month.
+                    </p>
+
+                </div>
+
+
+                <div class="monthly-goals-progress">
+
+                    <div class="monthly-goals-header">
+
+                        <div></div>
+
+                        <strong id="monthlyGoalsProgressValue">
+                            0%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="monthly-goals-summary">
+
+                        <strong id="monthlyGoalsCompletedText">
+                            0 of 0
+                        </strong>
+
+                        <span>
+                            goals completed
+                        </span>
+
+                    </div>
+
+
+                    <div class="monthly-goals-progress-track">
+
+                        <div id="monthlyGoalsProgressBar" class="monthly-goals-progress-fill">
+                        </div>
+
+                    </div>
+
+
+                    <div class="monthly-goals-stats">
+
+                        <div class="monthly-goal-stat">
+
+                            <strong id="monthlyGoalsCompleted">
+                                0
+                            </strong>
+
+                            <span>
+                                Completed
+                            </span>
+
+                        </div>
+
+
+                        <div class="monthly-goal-stat">
+
+                            <strong id="monthlyGoalsMissed">
+                                0
+                            </strong>
+
+                            <span>
+                                Missed
+                            </span>
+
+                        </div>
+
+
+                        <div class="monthly-goal-stat">
+
+                            <strong id="monthlyGoalsActive">
+                                0
+                            </strong>
+
+                            <span>
+                                Active
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             MOMENTUM JOURNEY
+        ================================================== -->
+
+            <div class="monthly-report-section">
+
+
+
+                <div class="monthly-section-header">
+
+                    <span class="monthly-report-eyebrow">
+                        MOMENTUM
+                    </span>
+
+                    <h3>
+                        Momentum Journey
+                    </h3>
+
+                    <p>
+                        Your Momentum journey across the month.
+                    </p>
+
+                </div>
+
+
+                <div class="momentum-journey-card">
+
+                    <div class="momentum-journey-main">
+
+                        <span id="monthlyMomentumEnded" class="momentum-journey-value">
+                            0
+                        </span>
+
+                        <span class="momentum-journey-label">
+                            THIS MONTH MOMENTUM
+                        </span>
+
+                    </div>
+
+
+                    <div class="momentum-journey-stats">
+
+                        <div class="momentum-journey-stat">
+
+                            <strong id="monthlyMomentumStarted">
+                                0
+                            </strong>
+
+                            <span>
+                                Started
+                            </span>
+
+                        </div>
+
+
+                        <div class="momentum-journey-stat">
+
+                            <strong id="monthlyMomentumPeak">
+                                0
+                            </strong>
+
+                            <span>
+                                Peak
+                            </span>
+
+                        </div>
+
+
+                        <div class="momentum-journey-stat">
+
+                            <strong id="monthlyMomentumEndedStat">
+                                0
+                            </strong>
+
+                            <span>
+                                Ended
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="momentum-longest">
+
+                        <span>
+                            Longest Momentum
+                        </span>
+
+                        <strong id="monthlyMomentumLongest">
+                            0 DAYS
+                        </strong>
+
+                    </div>
+
+                </div>
+                <div class="monthly-report-section">
+
+                    <div class="monthly-section-header">
+
+                        <span class="monthly-report-eyebrow">
+                            MOMENTUM
+                        </span>
+
+                        <h3>
+                            Momentum Trend
+                        </h3>
+
+                        <p>
+                            See how Momentum moved day by day.
+                        </p>
+
+                    </div>
+
+
+                    <div class="momentum-graph">
+
+                        <div class="momentum-graph-header">
+
+                            <div></div>
+
+                            <span id="monthlyMomentumPeakLabel" class="momentum-graph-peak">
+                                Peak 0
+                            </span>
+
+                        </div>
+
+                        <div class="momentum-graph-body">
+
+                            <div id="momentumGraphYAxis" class="momentum-graph-y-axis"></div>
+
+
+                            <div class="momentum-graph-area">
+
+                                <div id="monthlyMomentumChart" class="momentum-chart"></div>
+
+                                <div id="momentumGraphXAxis" class="momentum-graph-x-axis"></div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <div class="monthly-report-section">
+
+                    <div class="monthly-section-header">
+
+                        <span class="monthly-report-eyebrow">
+                            INSIGHTS
+                        </span>
+
+                        <h3>
+                            Monthly Insights
+                        </h3>
+
+                        <p>
+                            What your performance tells you this month.
+                        </p>
+
+                    </div>
+
+
+                    <div id="monthlyInsights" class="monthly-insights"></div>
+
+                </div>
+
+            </div>
+
+    </section>
+
+    <section id="monthlyBadgePage">
+
+        <div class="monthly-badge-page">
+
+            <!-- PAGE HEADER -->
+            <div class="monthly-badge-page-header">
+
+                <div>
+                    <span class="monthly-badge-page-eyebrow">
+                        MONTHLY CHALLENGE
+                    </span>
+
+                    <h2 id="monthlyBadgeMonth">
+                        August 2026
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <!-- BADGE HERO -->
+            <div class="monthly-badge-hero">
+
+                <div id="monthlyBadgeArtwork" class="monthly-badge-artwork">
+                    <div id="monthlyBadgeArtworkInner" class="monthly-badge-artwork-inner">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <span id="monthlyBadgeStatus" class="monthly-badge-status">
+                LOCKED
+            </span>
+
+
+            <h1 id="monthlyBadgeTitle">
+                The Relentless
+            </h1>
+
+
+            <p id="monthlyBadgeDescription">
+                Complete this month's challenges
+                to earn this badge.
+            </p>
+
+        </div>
+
+
+        <!-- REQUIREMENTS -->
+        <div class="monthly-badge-section">
+
+            <div class="monthly-badge-section-header">
+
+                <h3>
+                    Requirements
+                </h3>
+
+                <span id="monthlyBadgeRequirementCount">
+                    0 / 3
+                </span>
+
+            </div>
+
+
+            <div id="monthlyBadgeRequirements" class="monthly-badge-requirements"></div>
+
+        </div>
+
+        <div class="monthly-badge-collection-section">
+
+            <div class="monthly-badge-section-header">
+
+                <h3>
+                    Badge Collection
+                </h3>
+
+            </div>
+
+            <div id="monthlyBadgeCollection" class="monthly-badge-collection"></div>
+
+        </div>
+
+
+        <!-- EARNED MESSAGE -->
+        <div id="monthlyBadgeEarnedMessage" class="monthly-badge-earned-message">
+
+            <span class="monthly-badge-earned-icon">
+                ✓
+            </span>
+
+            <div>
+
+                <strong>
+                    Badge Earned
+                </strong>
+
+                <span>
+                    You completed this month's challenge.
+                </span>
+
+            </div>
+
+        </div>
+
+        </div>
+
+    </section>
     <!-- ===========================
        Account Section
   ============================ -->
     <section id="account" class="hidden">
         <h2>Documentation</h2>
 
-        <h5><a href="documentation.html">Stand Out Version 2.2</a></h5>
-        <h5>Date of Documentation: 12 Feb 2026</h5>
+        <h5><a href="documentation.html">Stand Out Version 2.3 beta</a></h5>
+        <h5>Date of Documentation: 25 Aug 2026</h5>
 
         <h3>Achievements</h3>
         <div id="achievementsViewer" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
 
+        <!-- ===========================
+     SOUND & TONES
+=========================== -->
+
+        <h3>Sound & Tones</h3>
+
+        <div class="sound-settings">
+
+            <div class="sound-setting-row">
+
+                <div class="sound-setting-info">
+                    <strong>Achievements</strong>
+                    <span>When you unlock an achievement</span>
+                </div>
+
+                <div class="sound-setting-control">
+
+                    <select id="achievementTone">
+                        <option value="default">Default</option>
+                        <option value="none">None</option>
+                        <option value="custom">Custom</option>
+                    </select>
+
+                    <input type="file" id="achievementToneFile" accept="audio/*" hidden>
+
+                    <button type="button" class="tone-upload-btn" id="achievementChooseBtn">
+                        Choose
+                    </button>
+
+                    <button type="button" class="tone-preview-btn" id="achievementPreviewBtn" disabled>
+                        ▶
+                    </button>
+
+                </div>
+
+
+            </div>
+
+            <div class="sound-setting-row">
+
+                <div class="sound-setting-info">
+                    <strong>MissionTone</strong>
+                    <span>When you Complete a mission</span>
+                </div>
+                <div class="sound-setting-control">
+
+                    <select id="missionTone">
+                        <option value="default">Default</option>
+                        <option value="none">None</option>
+                        <option value="custom">Custom</option>
+                    </select>
+
+                    <input type="file" id="missionToneFile" accept="audio/*" hidden>
+
+                    <button type="button" class="tone-upload-btn" id="missionChooseBtn">
+                        Choose
+                    </button>
+
+                    <button type="button" class="tone-preview-btn" id="missionPreviewBtn" disabled>
+                        ▶
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="sound-setting-row">
+
+                <div class="sound-setting-info">
+                    <strong>CardMint</strong>
+                    <span>When you Mint a card</span>
+                </div>
+                <div class="sound-setting-control">
+
+                    <select id="mintTone">
+                        <option value="default">Default</option>
+                        <option value="none">None</option>
+                        <option value="custom">Custom</option>
+                    </select>
+
+                    <input type="file" id="mintToneFile" accept="audio/*" hidden>
+
+                    <button type="button" class="tone-upload-btn" id="mintChooseBtn">
+                        Choose
+                    </button>
+
+                    <button type="button" class="tone-preview-btn" id="mintPreviewBtn" disabled>
+                        ▶
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+     CUSTOM CARDS
+===================================================== -->
+
+        <div class="account-group">
+
+            <div class="account-group-title">
+                Custom Cards
+            </div>
+
+            <div class="custom-cards-account">
+                <br>
+                <p class="custom-card-description">Create your own collectible cards for the marketplace.
+                </p>
+
+
+                <!-- CREATE -->
+
+                <button type="button" class="custom-card-add-btn" onclick="openCustomCardCreator()">
+
+                    <span class="custom-card-add-icon">
+                        ＋
+                    </span>
+
+                    <span>
+                        Create Custom Card
+                    </span>
+
+                </button>
+
+
+                <!-- MANAGED CUSTOM CARDS -->
+
+                <div id="customCardsManager" class="custom-cards-manager"></div>
+
+            </div>
+
+        </div>
+
+        <div class="account-setting-card">
+
+            <div class="account-setting-header">
+                <div>
+                    <h3>Custom Background</h3>
+                    <p>Choose an image for your app background.</p>
+                </div>
+            </div>
+
+            <div class="background-actions">
+
+                <label for="backgroundFileInput" class="background-action-btn">
+                    Choose Image
+                </label>
+
+                <input type="file" id="backgroundFileInput" accept="image/*" hidden>
+
+                <button type="button" id="removeBackgroundBtn" class="background-action-btn secondary">
+                    Remove Background
+                </button>
+
+            </div>
+            <div class="background-controls">
+
+                <div class="background-control">
+
+                    <div class="background-control-header">
+                        <span>Background Opacity</span>
+                        <span id="backgroundOpacityValue">100%</span>
+                    </div>
+
+                    <input type="range" id="backgroundOpacity" min="20" max="100" value="100" step="5">
+
+                </div>
+
+
+                <div class="background-control">
+
+                    <div class="background-control-header">
+                        <span>Dark Overlay</span>
+                        <span id="backgroundOverlayValue">35%</span>
+                    </div>
+
+                    <input type="range" id="backgroundOverlay" min="0" max="80" value="35" step="5">
+
+                </div>
+
+
+                <div class="background-control">
+
+                    <div class="background-control-header">
+                        <span>Background Blur</span>
+                        <span id="backgroundBlurValue">0px</span>
+                    </div>
+
+                    <input type="range" id="backgroundBlur" min="0" max="12" value="0" step="1">
+
+                </div>
+
+            </div>
+
+        </div>
+
         <h3>Backup & Restore</h3>
 
-<button class="danger-btn" style="background:#2563EB; margin-bottom:10px;"
-    onclick="saveProgressToFile()">
-    💾 Save Progress
-</button>
+        <button class="danger-btn" style="background:#2563EB; margin-bottom:10px;" onclick="saveProgressToFile()">
+            💾 Save Progress
+        </button>
 
-<button class="danger-btn" style="background:#16a34a;"
-    onclick="loadProgressFromFile()">
-    📂 Restore Progress
-</button>
+        <button class="danger-btn" style="background:#16a34a;" onclick="loadProgressFromFile()">
+            📂 Restore Progress
+        </button>
 
-<input type="file" id="importProgressFile" accept=".json" hidden>
+        <input type="file" id="importProgressFile" accept=".json" hidden>
 
         <h3>Reset Data</h3>
-        <button id="resetDataBtn" onclick="customConfirm('Are you sure you want to reset all data?', resetData)" class="danger-btn">
+        <button id="resetDataBtn" onclick="customConfirm('Are you sure you want to reset all data?', resetData)"
+            class="danger-btn">
             Reset My Data
         </button>
     </section>
 
-  
+
     <!-- ===========================
        Modals (Add/Edit + Alert + Confirm)
   ============================ -->
@@ -407,21 +1344,212 @@
         </div>
     </div>
 
+    <!-- =========================================================
+     CUSTOM CARD MODAL
+========================================================= -->
+
+    <div id="customCardModal" class="custom-card-modal">
+
+        <div class="custom-card-modal-content">
+
+            <!-- CLOSE -->
+
+            <button type="button" class="custom-card-modal-close" onclick="closeCustomCardModal()">
+                ×
+            </button>
+
+
+            <!-- =================================================
+             HEADER
+        ================================================= -->
+
+            <div class="custom-card-modal-header">
+
+                <span class="custom-card-modal-eyebrow">
+                    MARKETPLACE
+                </span>
+
+                <h2>
+                    Create Custom Card
+                </h2>
+
+                <p>
+                    Create a card that represents you.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+             CARD ARTWORK
+        ================================================= -->
+
+            <div class="custom-card-field">
+
+                <label>
+                    Card Artwork
+                </label>
+
+                <div class="custom-card-image-picker" id="customCardImagePicker">
+
+                    <img id="customCardImagePreview" alt="Card artwork preview">
+
+                    <div id="customCardImagePlaceholder" class="custom-card-image-placeholder">
+
+                        <span>＋</span>
+
+                        <strong>
+                            Choose Artwork
+                        </strong>
+
+                        <small>
+                            JPG, PNG or WebP
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <input type="file" id="customCardImage" accept="image/png,image/jpeg,image/webp" hidden>
+
+            </div>
+
+
+            <!-- =================================================
+             TITLE
+        ================================================= -->
+
+            <div class="custom-card-field">
+
+                <label for="customCardTitle">
+                    Card Title
+                </label>
+
+                <input id="customCardTitle" type="text" maxlength="40" placeholder="Enter card title">
+
+            </div>
+
+
+            <!-- =================================================
+             QUOTE
+        ================================================= -->
+
+            <div class="custom-card-field">
+
+                <label for="customCardQuote">
+                    Quote
+                </label>
+
+                <textarea id="customCardQuote" maxlength="160" rows="3" placeholder="Enter a quote..."></textarea>
+
+            </div>
+
+
+            <!-- =================================================
+             GRADE + COST
+        ================================================= -->
+
+            <div class="custom-card-two-column">
+
+
+                <!-- GRADE -->
+
+                <div class="custom-card-field">
+
+                    <label for="customCardGrade">
+                        Grade
+                    </label>
+
+                    <select id="customCardGrade">
+
+                        <option value="A">
+                            A
+                        </option>
+
+                        <option value="B">
+                            B
+                        </option>
+
+                        <option value="C">
+                            C
+                        </option>
+
+                        <option value="D">
+                            D
+                        </option>
+
+                        <option value="E">
+                            E
+                        </option>
+
+                        <option value="S">
+                            S
+                        </option>
+
+
+                    </select>
+
+                </div>
+
+
+                <!-- COST -->
+
+                <div class="custom-card-field">
+
+                    <label for="customCardCost">
+                        Cost
+                    </label>
+
+                    <input id="customCardCost" type="number" min="0" step="1" placeholder="100">
+
+                </div>
+
+            </div>
+
+
+
+
+            <!-- =================================================
+             ACTIONS
+        ================================================= -->
+
+            <div class="custom-card-actions">
+
+                <button type="button" class="custom-card-cancel" onclick="closeCustomCardModal()">
+                    Cancel
+                </button>
+
+
+                <button type="button" class="custom-card-create" onclick="createCustomCard()">
+                    Create Card
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <script>
         if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const reg = await navigator.serviceWorker.register("./service-worker.js");
-      console.log("✅ SW registered with scope:", reg.scope);
-    } catch (err) {
-      console.error("❌ SW registration failed:", err);
-    }
-  });
+            window.addEventListener("load", async () => {
+                try {
+                    const reg = await navigator.serviceWorker.register("./service-worker.js");
+                    console.log("✅ SW registered with scope:", reg.scope);
+                } catch (err) {
+                    console.error("❌ SW registration failed:", err);
+                }
+            });
         }
     </script>
     <script src="JS/cards.js"></script>
-    <script src="JS/tools.js"></script>
+    <script src="JS/sound.js"></script>
     <script src="JS/app.js"></script>
-    </body>
+    <script src="JS/momentum.js"></script>
+    <script src="JS/custom-cards.js"></script>
+    <script src="JS/background.js"></script>
+    <script src="JS/badges.js"></script>
+</body>
 
 </html>

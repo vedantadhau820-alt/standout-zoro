@@ -10340,12 +10340,13 @@ async function createCustomCard() {
 
     const costRanges = {
 
-        E: { min: 5, max: 14 },
-        D: { min: 15, max: 24 },
-        C: { min: 25, max: 49 },
-        B: { min: 50, max: 79 },
-        A: { min: 80, max: 150 },
-        S: { min: 151, max: 200 }
+        D: { min: 5, max: 40 },
+        C: { min: 30, max: 60 },
+        B: { min: 50, max: 60 },
+        A: { min: 80, max: 100 },
+        S: { min: 100, max: 150 },
+        SS: { min: 150, max: 200 },
+        X: { min: 69, max: 69 }
 
     };
 

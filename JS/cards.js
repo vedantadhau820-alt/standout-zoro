@@ -1438,22 +1438,7 @@ image: "Images/SS14.jpg" },
   cost: 98,
   image: "Images/A45.jpg"
         },
-{
-  id: "hado",
-  title: "Nejire Hado",
-  quote: "That’s amazing!",
-  grade: "D",
-  cost: 9,
-  image: "Images/E2.jpg"
-},
-{
-  id: "apoo",
-  title: "Scratchmen Apoo",
-  quote: "Music is my weapon!",
-  grade: "D",
-  cost: 6,
-  image: "Images/E1.jpg"
-},
+
         {
   id: "anya",
   title: "Anya",

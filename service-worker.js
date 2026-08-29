@@ -6,7 +6,7 @@ const FONT_AWESOME_CACHE =
   "standout-fontawesome-v1";
 
 const BACKGROUND_CACHE =
-  "standout-background-v2";
+  "standout-background-v3";
 
 const FONT_AWESOME_FILES = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
@@ -232,6 +232,7 @@ const BACKGROUND_ASSETS = [
   "/Images/A43.jpg",
   "/Images/A44.jpg",
   "/Images/A45.jpg",
+  
 
   //w
   "/Images/w1.jpg",

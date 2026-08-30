@@ -2553,7 +2553,7 @@ function renderMyCards() {
     });
 }
 
-const GRADE_ORDER = ["D", "C", "B", "A", "S", "SS", "X", "w"];
+const GRADE_ORDER = ["D", "C", "B", "X", "A", "S", "SS", "w"];
 
 function gradeRank(grade) {
     return GRADE_ORDER.indexOf(grade) + 1;

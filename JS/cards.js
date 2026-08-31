@@ -65,7 +65,7 @@ window.cardCatalog = [
 
    { id: "Endgame_Cap", title: "Captain America - Endgame", grade: "w", quote: "The Worthy Human.", cost: 70, image: "Images/Endgame_Cap.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
    { id: "Endgame_Thor", title: "Thor - Ragnarock", grade: "w", quote: "God Of Thunder.", cost: 80, image: "Images/Endgame_Thor.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
-
+/*
    {
       id: "season_01_card",
       title: "The Ascension",
@@ -90,5 +90,5 @@ window.cardCatalog = [
       expiresAt: "2026-09-30T23:29:30Z",
       season: "season-01",
       seasonReward: true
-   }
+   }*/
 ];

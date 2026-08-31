@@ -9,7 +9,7 @@
    - Expanded panel sits below header
 ========================================================= */
 
-(() => { 
+(() => {
 
     "use strict";
 
@@ -281,16 +281,16 @@
 
     }
 
-   function reloadFromStorage() {
+    function reloadFromStorage() {
 
-    state = loadState();
+        state = loadState();
 
-    momentumHistory =
-        loadMomentumHistory();
+        momentumHistory =
+            loadMomentumHistory();
 
-    render();
+        render();
 
-   }
+    }
 
 
     function recordMomentumHistory() {
@@ -1548,6 +1548,19 @@
         const currentDay =
             today();
 
+        /*
+ * No Momentum streak has ever started.
+ * There is nothing to penalize yet.
+ */
+        if (!state.lastProofDate) {
+
+            state.lastCheckDate = currentDay;
+
+            saveState();
+
+            return;
+        }
+
 
         /*
          * First initialization.
@@ -2145,8 +2158,8 @@
                 ...momentumHistory
             }),
 
-       reload:
-    reloadFromStorage,
+        reload:
+            reloadFromStorage,
 
 
         getLevel:

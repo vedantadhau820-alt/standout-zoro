@@ -235,7 +235,8 @@ const BACKGROUND_ASSETS = [
   
 
   //w
-  "/Images/w1.jpg",
+  "/Images/Endgame_Cap.gif",
+  "/Images/Endgame_Thor.gif",
   // Sounds
   "/Music/Complete.mp3",
   "/Music/Achievements.mp3",

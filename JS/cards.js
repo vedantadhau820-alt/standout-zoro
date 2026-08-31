@@ -1651,4 +1651,33 @@ image: "Images/SS14.jpg" },
   cost: 98,
   image: "Images/A45.jpg"
         },
+
+  { id: "Endgame_Cap", title: "Captain America - Endgame", grade: "w", quote: "The Worthy Human.", cost: 70, image: "Images/Endgame_Cap.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
+   { id: "Endgame_Thor", title: "Thor - Ragnarock", grade: "w", quote: "God Of Thunder.", cost: 80, image: "Images/Endgame_Thor.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
+
+   {
+      id: "season_01_card",
+      title: "The Ascension",
+      quote: "You don't rise by chance. You rise by choice.",
+      grade: "A",
+      cost: 0,
+      image: "assets/cards/season-01-ascension.png",
+      limited: true,
+      expiresAt: "2026-09-30T23:29:30Z",
+      season: "season-01",
+      seasonReward: true
+   },
+
+   {
+      id: "season_01_exclusive_card",
+      title: "Beyond Limits",
+      quote: "The limit was never the wall. It was the belief.",
+      grade: "S",
+      cost: 0,
+      image: "assets/cards/season-01-beyond-limits.png",
+      limited: true,
+      expiresAt: "2026-09-30T23:29:30Z",
+      season: "season-01",
+      seasonReward: true
+   }
       ];

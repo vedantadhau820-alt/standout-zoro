@@ -4,6 +4,8 @@
 
 const BACKGROUND_DB_NAME = "AppBackgroundDB";
 const BACKGROUND_STORE = "background";
+const BACKGROUND_APPEARANCE_KEY =
+    "standout_background_appearance";
 
 let backgroundDB = null;
 let currentBackgroundURL = null;
@@ -458,6 +460,72 @@ const backgroundBlurValue =
     );
 
 
+    function loadBackgroundAppearance() {
+
+    try {
+
+        const raw =
+            localStorage.getItem(
+                BACKGROUND_APPEARANCE_KEY
+            );
+
+        if (!raw) {
+            return;
+        }
+
+        const saved =
+            JSON.parse(raw);
+
+
+        if (
+            backgroundOpacity &&
+            Number.isFinite(
+                Number(saved.opacity)
+            )
+        ) {
+
+            backgroundOpacity.value =
+                Number(saved.opacity) * 100;
+
+        }
+
+
+        if (
+            backgroundOverlay &&
+            Number.isFinite(
+                Number(saved.overlay)
+            )
+        ) {
+
+            backgroundOverlay.value =
+                Number(saved.overlay) * 100;
+
+        }
+
+
+        if (
+            backgroundBlur &&
+            Number.isFinite(
+                Number(saved.blur)
+            )
+        ) {
+
+            backgroundBlur.value =
+                Number(saved.blur);
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not load background appearance:",
+            error
+        );
+
+    }
+
+}
+
 function updateBackgroundAppearance() {
 
     const opacity =
@@ -475,6 +543,10 @@ function updateBackgroundAppearance() {
             ? backgroundBlur.value
             : 0;
 
+
+    /*
+     * Apply appearance variables.
+     */
 
     document.documentElement.style
         .setProperty(
@@ -495,6 +567,10 @@ function updateBackgroundAppearance() {
         );
 
 
+    /*
+     * Update displayed values.
+     */
+
     if (backgroundOpacityValue) {
 
         backgroundOpacityValue.textContent =
@@ -513,6 +589,31 @@ function updateBackgroundAppearance() {
 
         backgroundBlurValue.textContent =
             `${blur}px`;
+
+    }
+
+
+    /*
+     * Persist appearance settings.
+     */
+
+    try {
+
+        localStorage.setItem(
+            BACKGROUND_APPEARANCE_KEY,
+            JSON.stringify({
+                opacity,
+                overlay,
+                blur
+            })
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Could not save background appearance:",
+            error
+        );
 
     }
 
@@ -555,4 +656,5 @@ if (backgroundBlur) {
 }
 
 
+loadBackgroundAppearance();
 updateBackgroundAppearance();

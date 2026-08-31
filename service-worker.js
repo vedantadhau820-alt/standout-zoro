@@ -249,6 +249,7 @@ const BACKGROUND_ASSETS = [
 
   // Video
   "/AchievedGoal.mp4",
+  "/welcome.mp4",
 
   // Font Awesome
   //...FONT_AWESOME_FILES

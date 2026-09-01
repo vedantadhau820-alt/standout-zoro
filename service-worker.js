@@ -258,6 +258,10 @@ const BACKGROUND_ASSETS = [
   //bagdes
   "/badges/aug-2026.png",
   "/badges/sep-2026.png",
+
+  //Assets
+  "/assets/season-01-Ascension.jpg",
+  "/assets/season-01-beyond-limits.jpg",
 ];
 
 /* ===========================

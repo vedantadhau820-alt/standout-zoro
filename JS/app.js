@@ -3572,17 +3572,13 @@ function calculateMonthMetrics(year, month) {
             Number(day.pointsDelta) || 0;
 
         /*
-         * A day counts as active when
-         * something actually happened.
-         */
-        const events =
-            Array.isArray(day.events)
-                ? day.events
-                : [];
-
-        if (events.length > 0) {
-            metrics.activeDays++;
-        }
+     * ACTIVE DAY
+     *
+     * Only a completed mission counts.
+     */
+    if ((Number(day.completed) || 0) > 0) {
+        metrics.activeDays++;
+    }
     });
 
     const totalMissions =

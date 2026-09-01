@@ -35,7 +35,7 @@ const MONTHLY_BADGES = {
 
         title: "The Disciplined",
 
-        artwork: "sep-2026.png",
+        artwork: "badges/sep-2026.png",
 
         requirements: {
 

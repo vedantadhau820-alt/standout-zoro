@@ -31,6 +31,10 @@ const APP_SHELL = [
   "/CSS/badges.css",
   "/CSS/momentum.css",
   "/CSS/monthly-report.css",
+  "/CSS/welcome.css",
+  "/CSS/daily-challenge.css",
+  "/CSS/season.css",
+  "/CSS/mastery.css",
 
   //JS
   "/JS/cards.js",
@@ -40,9 +44,11 @@ const APP_SHELL = [
   "/JS/custom-cards.js",
   "/JS/momentum.js",
   "/JS/sound.js",
-  "/icon.jpeg",
+  "/JS/welcome.js",
+  "/JS/daily-challenge.js",
+  "/JS/season.js",
   
-
+  "icon.jpeg",
 
 
 ];

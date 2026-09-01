@@ -260,8 +260,8 @@ const BACKGROUND_ASSETS = [
   "/badges/sep-2026.png",
 
   //Assets
-  "/assets/season-01-Ascension.jpg",
-  "/assets/season-01-beyond-limits.jpg",
+  "/assets/cards/season-01-Ascension.png",
+  "/assets/cards/season-01-beyond-limits.png",
 ];
 
 /* ===========================

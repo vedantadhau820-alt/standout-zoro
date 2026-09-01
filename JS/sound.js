@@ -579,7 +579,7 @@ async function playAppTone(type) {
          * 10 seconds.
          */
 
-        toneTimeout =
+       /* toneTimeout =
             setTimeout(() => {
 
                 if (
@@ -590,7 +590,7 @@ async function playAppTone(type) {
 
                 }
 
-            }, 5000);
+            }, 5000);*/
 
 
         return audio;

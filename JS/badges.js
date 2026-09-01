@@ -33,7 +33,7 @@ const MONTHLY_BADGES = {
 
         id: "sep-2026",
 
-        title: "The Disciplined",
+        title: "The Endgame",
 
         artwork: "badges/sep-2026.png",
 

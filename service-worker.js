@@ -1,5 +1,5 @@
 const CACHE_NAME = "standout-v2.4 beta 16";
-//const MEDIA_CACHE = "standout-media";  
+//const MEDIA_CACHE = "standout-media";
 // NEVER versioned
 
 const FONT_AWESOME_CACHE =
@@ -8,6 +8,7 @@ const FONT_AWESOME_CACHE =
 const BACKGROUND_CACHE =
   "standout-background-v6";
 
+
 const FONT_AWESOME_FILES = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2",
@@ -15,8 +16,9 @@ const FONT_AWESOME_FILES = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-brands-400.woff2"
 ];
 
+
 const APP_SHELL = [
-  "/",                  // IMPORTANT
+  "/",
   "/index.html",
   "/manifest.json",
 
@@ -31,12 +33,8 @@ const APP_SHELL = [
   "/CSS/badges.css",
   "/CSS/momentum.css",
   "/CSS/monthly-report.css",
-  "/CSS/welcome.css",
-  "/CSS/daily-challenge.css",
-  "/CSS/season.css",
-  "/CSS/mastery.css",
 
-  //JS
+  // JS
   "/JS/cards.js",
   "/JS/app.js",
   "/JS/background.js",
@@ -44,20 +42,14 @@ const APP_SHELL = [
   "/JS/custom-cards.js",
   "/JS/momentum.js",
   "/JS/sound.js",
-  "/JS/welcome.js",
-  "/JS/daily-challenge.js",
-  "/JS/season.js",
-  
-  "icon.jpeg",
 
-
+  // Icon
+  "/icon.jpeg"
 ];
-
 
 
 const BACKGROUND_ASSETS = [
 
-  
   // SS
   "/Images/SS1.jpg",
   "/Images/SS2.jpg",
@@ -238,11 +230,11 @@ const BACKGROUND_ASSETS = [
   "/Images/A43.jpg",
   "/Images/A44.jpg",
   "/Images/A45.jpg",
-  
 
-  //w
+  // Endgame
   "/Images/Endgame_Cap.gif",
   "/Images/Endgame_Thor.gif",
+
   // Sounds
   "/Music/Complete.mp3",
   "/Music/Achievements.mp3",
@@ -258,55 +250,102 @@ const BACKGROUND_ASSETS = [
   "/AchievedGoal.mp4",
   "/welcome.mp4",
 
-  // Font Awesome
-  //...FONT_AWESOME_FILES
-
-  //bagdes
+  // Badges
   "/badges/aug-2026.png",
   "/badges/sep-2026.png",
 
-  //Assets
-  "/assets/cards/season-01-Ascension.png",
-  "/assets/cards/season-01-beyond-limits.png",
+  // Assets
+  "/assets/season-01-Ascension.jpg",
+  "/assets/season-01-beyond-limits.jpg"
 ];
 
+
 /* ===========================
-   INSTALL → CACHE APP SHELL
+   INSTALL
 =========================== */
+
 self.addEventListener("install", event => {
 
   console.log("🟡 SW installing...");
 
   event.waitUntil(
-    (async () => {
 
-      /* =====================================================
-         APP SHELL
-      ===================================================== */
+    (async () => {
 
       const appCache =
         await caches.open(CACHE_NAME);
 
-      try {
 
-        await appCache.addAll(
-          APP_SHELL
-        );
+      /* =====================================================
+         APP SHELL
 
-        console.log(
-          "✅ App shell cached"
-        );
+         IMPORTANT:
+         Do NOT use addAll() here.
 
-      } catch (err) {
+         Every file is cached independently so that
+         one missing file cannot break SW installation.
+      ===================================================== */
 
-        console.error(
-          "❌ App shell cache failed:",
-          err
-        );
+      await Promise.all(
 
-        throw err;
+        APP_SHELL.map(
+          async url => {
 
-      }
+            try {
+
+              const response =
+                await fetch(
+                  url,
+                  {
+                    cache: "no-cache"
+                  }
+                );
+
+
+              if (
+                response.ok
+              ) {
+
+                await appCache.put(
+                  url,
+                  response.clone()
+                );
+
+
+                console.log(
+                  "✅ Shell cached:",
+                  url
+                );
+
+              } else {
+
+                console.warn(
+                  "⚠️ Shell unavailable:",
+                  url,
+                  response.status
+                );
+
+              }
+
+            } catch (error) {
+
+              console.warn(
+                "⚠️ Shell cache failed:",
+                url,
+                error
+              );
+
+            }
+
+          }
+        )
+
+      );
+
+
+      console.log(
+        "✅ App shell caching finished"
+      );
 
 
       /* =====================================================
@@ -317,6 +356,7 @@ self.addEventListener("install", event => {
         await caches.open(
           FONT_AWESOME_CACHE
         );
+
 
       for (
         const url of FONT_AWESOME_FILES
@@ -332,14 +372,16 @@ self.addEventListener("install", event => {
               }
             );
 
+
           if (
             response.ok
           ) {
 
             await fontAwesomeCache.put(
               url,
-              response
+              response.clone()
             );
+
 
             console.log(
               "✅ Font Awesome cached:",
@@ -361,118 +403,391 @@ self.addEventListener("install", event => {
       }
 
     })()
+
   );
+
 
   self.skipWaiting();
+
 });
 
-self.addEventListener("message", event => {
-  if (event.data === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
+
 /* ===========================
-   ACTIVATE → CLEAN OLD CACHES
+   MESSAGE
 =========================== */
-self.addEventListener("activate", event => {
-  console.log("🟢 SW activating");
 
-  event.waitUntil(
-    (async () => {
-      // clean old caches
-      const keys = await caches.keys();
-      await Promise.all(
-        keys.map(k => {
+self.addEventListener(
+  "message",
+  event => {
 
-          if (
-            k === CACHE_NAME ||
-            k === FONT_AWESOME_CACHE ||
-            k === BACKGROUND_CACHE
-          ) {
-            return Promise.resolve();
-          }
+    if (
+      event.data === "SKIP_WAITING"
+    ) {
 
-          return caches.delete(k);
+      self.skipWaiting();
 
-        })
-      );
+    }
 
-      cacheBackgroundAssets().catch(error => {
+  }
+);
 
-        console.warn(
-          "Background asset caching failed:",
-          error
+
+/* ===========================
+   ACTIVATE
+=========================== */
+
+self.addEventListener(
+  "activate",
+  event => {
+
+    console.log(
+      "🟢 SW activating"
+    );
+
+
+    event.waitUntil(
+
+      (async () => {
+
+        const keys =
+          await caches.keys();
+
+
+        await Promise.all(
+
+          keys.map(
+            key => {
+
+              /*
+               * Keep only current caches.
+               */
+
+              if (
+                key === CACHE_NAME ||
+                key === FONT_AWESOME_CACHE ||
+                key === BACKGROUND_CACHE
+              ) {
+
+                return Promise.resolve();
+
+              }
+
+
+              return caches.delete(
+                key
+              );
+
+            }
+          )
+
         );
 
-      });
 
-      // notify ALL clients
-      const clients = await self.clients.matchAll({
-        includeUncontrolled: true
-      });
+        /*
+         * Cache large background assets
+         * after activation.
+         */
 
-      clients.forEach(client => {
-        client.postMessage({ type: "SW_UPDATED" });
-      });
-    })()
-  );
+        cacheBackgroundAssets()
+          .catch(
+            error => {
 
-  self.clients.claim();
-});
+              console.warn(
+                "Background asset caching failed:",
+                error
+              );
 
-/* ===========================
+            }
+          );
+
+
+        /* =====================================================
+           NOTIFY ALL CLIENTS
+        ===================================================== */
+
+        const clients =
+          await self.clients.matchAll({
+            includeUncontrolled: true
+          });
+
+
+        clients.forEach(
+          client => {
+
+            client.postMessage({
+              type: "SW_UPDATED"
+            });
+
+          }
+        );
+
+      })()
+
+    );
+
+
+    self.clients.claim();
+
+  }
+);
+
+
+/* =========================================================
    FETCH → CACHE STRATEGY
-=========================== */
-self.addEventListener("fetch", event => {
+========================================================= */
 
-  const url =
-    event.request.url;
+self.addEventListener(
+  "fetch",
+  event => {
+
+    const request =
+      event.request;
 
 
-  /* =====================================================
-     FONT AWESOME / BACKGROUND ASSETS
-  ===================================================== */
+    const url =
+      request.url;
 
-  if (
-    FONT_AWESOME_FILES.includes(url) ||
-    BACKGROUND_ASSETS.includes(
-      new URL(
-        event.request.url
-      ).pathname
-    )
-  ) {
+
+    const requestURL =
+      new URL(url);
+
+
+    const pathname =
+      requestURL.pathname;
+
+
+    /* =====================================================
+       IGNORE NON-GET REQUESTS
+
+       POST / PUT / DELETE etc. should never be placed
+       into the Cache API.
+    ===================================================== */
+
+    if (
+      request.method !== "GET"
+    ) {
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       FONT AWESOME / BACKGROUND ASSETS
+    ===================================================== */
+
+    if (
+      FONT_AWESOME_FILES.includes(url) ||
+      BACKGROUND_ASSETS.includes(pathname)
+    ) {
+
+      event.respondWith(
+
+        (async () => {
+
+          /*
+           * CACHE FIRST
+           */
+
+          const cached =
+            await caches.match(
+              request
+            );
+
+
+          if (
+            cached
+          ) {
+
+            return cached;
+
+          }
+
+
+          /*
+           * NETWORK
+           */
+
+          try {
+
+            const response =
+              await fetch(
+                request
+              );
+
+
+            /*
+             * Save successful response.
+             */
+
+            if (
+              response.ok
+            ) {
+
+              const cache =
+                await caches.open(
+                  BACKGROUND_CACHE
+                );
+
+
+              await cache.put(
+                request,
+                response.clone()
+              );
+
+            }
+
+
+            return response;
+
+          } catch (error) {
+
+            console.warn(
+              "❌ Offline asset unavailable:",
+              url
+            );
+
+
+            throw error;
+
+          }
+
+        })()
+
+      );
+
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       APP REQUESTS
+
+       CACHE FIRST
+
+       If the resource is already cached:
+           → return cache
+
+       If not:
+           → try network
+
+       If network succeeds:
+           → cache it
+
+       If network fails AND this is navigation:
+           → return index.html
+
+       If network fails for another request:
+           → let request fail normally
+    ===================================================== */
 
     event.respondWith(
 
       (async () => {
 
+        /*
+         * 1. CACHE
+         */
+
         const cached =
           await caches.match(
-            event.request
+            request
           );
 
-        if (cached) {
+
+        if (
+          cached
+        ) {
 
           return cached;
 
         }
 
 
+        /*
+         * 2. NETWORK
+         */
+
         try {
 
           const response =
             await fetch(
-              event.request
+              request
             );
+
+
+          /*
+           * 3. RUNTIME CACHE
+           *
+           * Only cache successful
+           * same-origin GET requests.
+           */
+
+          if (
+            response.ok &&
+            requestURL.origin ===
+              self.location.origin
+          ) {
+
+            const cache =
+              await caches.open(
+                CACHE_NAME
+              );
+
+
+            await cache.put(
+              request,
+              response.clone()
+            );
+
+          }
+
 
           return response;
 
         } catch (error) {
 
-          console.warn(
-            "Offline asset unavailable:",
-            event.request.url
-          );
+          /*
+           * 4. OFFLINE NAVIGATION
+           *
+           * Only HTML page navigation gets
+           * the index.html fallback.
+           */
+
+          if (
+            request.mode === "navigate"
+          ) {
+
+            const offlinePage =
+              await caches.match(
+                "/index.html"
+              );
+
+
+            if (
+              offlinePage
+            ) {
+
+              console.log(
+                "📴 Offline → index.html"
+              );
+
+
+              return offlinePage;
+
+            }
+
+          }
+
+
+          /*
+           * 5. Other resources
+           *
+           * Do not return index.html for CSS,
+           * JS, images, audio, etc.
+           */
 
           throw error;
 
@@ -482,39 +797,13 @@ self.addEventListener("fetch", event => {
 
     );
 
-    return;
-
   }
+);
 
 
-  /* =====================================================
-     EXISTING APP SHELL LOGIC
-  ===================================================== */
-
-  event.respondWith(
-
-    caches.match(
-      event.request
-    ).then(cached => {
-
-      if (cached) {
-        return cached;
-      }
-
-      return fetch(
-        event.request
-      ).catch(() =>
-        caches.match(
-          "/index.html"
-        )
-      );
-
-    })
-
-  );
-
-});
-
+/* =========================================================
+   CACHE BACKGROUND ASSETS
+========================================================= */
 
 async function cacheBackgroundAssets() {
 
@@ -523,30 +812,52 @@ async function cacheBackgroundAssets() {
       BACKGROUND_CACHE
     );
 
+
   for (
     const url of BACKGROUND_ASSETS
   ) {
 
     try {
 
-      const existing =
-        await cache.match(url);
+      /*
+       * Don't download it again if
+       * already cached.
+       */
 
-      if (existing) {
+      const existing =
+        await cache.match(
+          url
+        );
+
+
+      if (
+        existing
+      ) {
 
         console.log(
           "Already cached:",
           url
         );
 
+
         continue;
 
       }
+
+
+      /*
+       * Download.
+       */
 
       const response =
         await fetch(
           url
         );
+
+
+      /*
+       * Cache only successful files.
+       */
 
       if (
         response.ok
@@ -557,14 +868,28 @@ async function cacheBackgroundAssets() {
           response.clone()
         );
 
+
         console.log(
           "✅ Background cached:",
+          url
+        );
+
+      } else {
+
+        console.warn(
+          "⚠️ Background returned:",
+          response.status,
           url
         );
 
       }
 
     } catch (error) {
+
+      /*
+       * One failed image/audio/video
+       * must NOT stop the remaining assets.
+       */
 
       console.warn(
         "⚠️ Background cache failed:",
@@ -576,4 +901,9 @@ async function cacheBackgroundAssets() {
 
   }
 
-}
+
+  console.log(
+    "✅ Background asset caching finished"
+  );
+
+  }

@@ -2405,7 +2405,7 @@ document.getElementById("importProgressFile").addEventListener("change", functio
 window.saveProgressToFile = saveProgressToFile;
 window.loadProgressFromFile = loadProgressFromFile;
 
-const DAILY_IMPROVEMENT_LIMIT = 11;
+const DAILY_IMPROVEMENT_LIMIT = 10;
 
 let dailyImprovementCount = parseInt(localStorage.getItem("dailyImprovementCount")) || 0;
 let lastImprovementDate = localStorage.getItem("lastImprovementDate") || new Date().toDateString();
@@ -7187,34 +7187,38 @@ function completeMission(btn) {
        DAILY LIMIT
     ===================================================== */
 
-    if (
-        dailyImprovementCount >=
-        DAILY_IMPROVEMENT_LIMIT
-    ) {
+    // if (
+    //     dailyImprovementCount >=
+    //     DAILY_IMPROVEMENT_LIMIT
+    // ) {
 
-        li.dataset.completed = "false";
+    //     li.dataset.completed = "false";
 
-        showPopup(
-            "You're too tired today. No improvement points gained."
-        );
+    //     showPopup(
+    //         "You're too tired today. No improvement points gained."
+    //     );
 
-        saveData();
+    //     saveData();
 
-        return;
-    }
+    //     return;
+    // }
 
 
     /* =====================================================
        SUCCESSFUL COMPLETION
     ===================================================== */
 
-    dailyImprovementCount++;
+    const canEarnImprovementPoint =
+    dailyImprovementCount < DAILY_IMPROVEMENT_LIMIT;
 
-    completedMissions++;
-
+if (canEarnImprovementPoint) {
     completedMissionCount++;
-    const isMissionAchievement =
-        missionMilestones.includes(completedMissions);
+    dailyImprovementCount++;
+    completedMissions++;
+}
+
+const isMissionAchievement =
+    missionMilestones.includes(completedMissions);
 
     if (!isMissionAchievement) {
         playAppTone("mission");
@@ -7363,15 +7367,24 @@ function completeMission(btn) {
     }
 
 
-    showPopup(
-        repeat === "none"
-            ? "Mission completed! Improvement point gained."
-            : "Mission completed! It will return for the next occurrence."
-    );
+   showPopup(
+    canEarnImprovementPoint
+        ? (
+            repeat === "none"
+                ? "Mission completed! Improvement point gained."
+                : "Mission completed! It will return for the next occurrence."
+        )
+        : (
+            repeat === "none"
+                ? "Mission completed! No Improvement Point gained. Daily Improvement Limit Reached."
+                : "Mission completed! No Improvement Point gained. Daily Improvement Limit Reached. It will return for the next occurrence."
+        )
+);
 
 
     saveData();
 }
+
 
 
 

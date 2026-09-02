@@ -158,15 +158,30 @@
        Mission Completion Popup
   ============================ -->
     <div id="motivationPopup" class="popup">
-        <div class="popup-content">
-            <h2 id="popup-title">Mission Complete</h2>
-            <p id="motivationQuote"></p>
-            <p id="achievement"></p>
-            <button onclick="closePopup()">Continue</button>
+    <div class="popup-content">
+
+        <div class="popup-icon">
+            ✓
         </div>
 
-        <audio id="popupSound" src="Music/Complete.mp3" preload="auto"></audio>
+        <h2 id="popup-title">Mission Complete</h2>
+
+        <p id="achievement"></p>
+
+        <div class="popup-divider"></div>
+
+        <p id="motivationQuote"></p>
+
+        <button onclick="closePopup()">Continue</button>
+
     </div>
+
+    <audio
+        id="popupSound"
+        src="Music/Complete.mp3"
+        preload="auto">
+    </audio>
+</div>
 
 
     <!-- ===========================

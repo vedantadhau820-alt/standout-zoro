@@ -2405,7 +2405,7 @@ document.getElementById("importProgressFile").addEventListener("change", functio
 window.saveProgressToFile = saveProgressToFile;
 window.loadProgressFromFile = loadProgressFromFile;
 
-const DAILY_IMPROVEMENT_LIMIT = 10;
+const DAILY_IMPROVEMENT_LIMIT = 11;
 
 let dailyImprovementCount = parseInt(localStorage.getItem("dailyImprovementCount")) || 0;
 let lastImprovementDate = localStorage.getItem("lastImprovementDate") || new Date().toDateString();

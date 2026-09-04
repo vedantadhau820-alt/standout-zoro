@@ -5912,7 +5912,46 @@ const achievements = [
     { id: "mission235", title: "Champion of Goals", desc: "Complete 235 missions", unlocked: false },
     { id: "mission240", title: "Task Mastermind", desc: "Complete 240 missions", unlocked: false },
     { id: "mission245", title: "Legendary Hero", desc: "Complete 245 missions", unlocked: false },
-    { id: "mission250", title: "Ultimate Legend", desc: "Complete 250 missions", unlocked: false }
+    { id: "mission250", title: "Ultimate Legend", desc: "Complete 250 missions", unlocked: false },
+
+    // Every 10 missions: 260 → 500
+    { id: "mission260", title: "Elite Tenacity", desc: "Complete 260 missions", unlocked: false },
+    { id: "mission270", title: "Relentless Force", desc: "Complete 270 missions", unlocked: false },
+    { id: "mission280", title: "Master of Progress", desc: "Complete 280 missions", unlocked: false },
+    { id: "mission290", title: "Unbreakable", desc: "Complete 290 missions", unlocked: false },
+    { id: "mission300", title: "Three Hundred Triumphs", desc: "Complete 300 missions", unlocked: false },
+    { id: "mission310", title: "Elite Performer", desc: "Complete 310 missions", unlocked: false },
+    { id: "mission320", title: "Mission Commander", desc: "Complete 320 missions", unlocked: false },
+    { id: "mission330", title: "Goal Dominator", desc: "Complete 330 missions", unlocked: false },
+    { id: "mission340", title: "Task Conqueror", desc: "Complete 340 missions", unlocked: false },
+    { id: "mission350", title: "Master of the Journey", desc: "Complete 350 missions", unlocked: false },
+    { id: "mission360", title: "Limit Breaker", desc: "Complete 360 missions", unlocked: false },
+    { id: "mission370", title: "Unstoppable Achiever", desc: "Complete 370 missions", unlocked: false },
+    { id: "mission380", title: "Mission Legend", desc: "Complete 380 missions", unlocked: false },
+    { id: "mission390", title: "Peak of Progress", desc: "Complete 390 missions", unlocked: false },
+    { id: "mission400", title: "Four Hundred Triumphs", desc: "Complete 400 missions", unlocked: false },
+    { id: "mission410", title: "Task Titan Elite", desc: "Complete 410 missions", unlocked: false },
+    { id: "mission420", title: "Mission Vanguard", desc: "Complete 420 missions", unlocked: false },
+    { id: "mission430", title: "Goal Master", desc: "Complete 430 missions", unlocked: false },
+    { id: "mission440", title: "Legendary Progress", desc: "Complete 440 missions", unlocked: false },
+    { id: "mission450", title: "Mission Grandmaster", desc: "Complete 450 missions", unlocked: false },
+    { id: "mission460", title: "Beyond Greatness", desc: "Complete 460 missions", unlocked: false },
+    { id: "mission470", title: "Task Overlord", desc: "Complete 470 missions", unlocked: false },
+    { id: "mission480", title: "Ultimate Performer", desc: "Complete 480 missions", unlocked: false },
+    { id: "mission490", title: "Legendary Streak", desc: "Complete 490 missions", unlocked: false },
+    { id: "mission500", title: "Five Hundred Triumphs", desc: "Complete 500 missions", unlocked: false },
+
+    // Every 50 missions: 550 → 1000
+    { id: "mission550", title: "Beyond Mastery", desc: "Complete 550 missions", unlocked: false },
+    { id: "mission600", title: "Six Hundred Triumphs", desc: "Complete 600 missions", unlocked: false },
+    { id: "mission650", title: "Unstoppable Legend", desc: "Complete 650 missions", unlocked: false },
+    { id: "mission700", title: "Seven Hundred Triumphs", desc: "Complete 700 missions", unlocked: false },
+    { id: "mission750", title: "Ultimate Champion", desc: "Complete 750 missions", unlocked: false },
+    { id: "mission800", title: "Eight Hundred Triumphs", desc: "Complete 800 missions", unlocked: false },
+    { id: "mission850", title: "Immortal Achiever", desc: "Complete 850 missions", unlocked: false },
+    { id: "mission900", title: "Nine Hundred Triumphs", desc: "Complete 900 missions", unlocked: false },
+    { id: "mission950", title: "Limitless Legend", desc: "Complete 950 missions", unlocked: false },
+    { id: "mission1000", title: "Millennium Master", desc: "Complete 1000 missions", unlocked: false }
 ];
 
 // Load achievements from storage

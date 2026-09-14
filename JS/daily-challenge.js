@@ -26,67 +26,127 @@
 
     const CHALLENGES = [
 
-        "Do 20 minutes of something you've been avoiding.",
+    "Do 20 pushups.",
 
-        "Spend 20 minutes learning something useful.",
+    "Write down 5 things you're grateful for.",
 
-        "Finish one small task you've been postponing.",
+    "Read 10 pages of a book.",
 
-        "Go 30 minutes without social media.",
+    "Drink 2 liters of water today.",
 
-        "Read 10 pages of a book.",
+    "Work for 25 minutes without checking your phone.",
 
-        "Work for 25 minutes without checking your phone.",
+    "Walk for 30 minutes.",
 
-        "Clean or organize one thing you've been ignoring.",
+    "Write down your thoughts in 500 words.",
 
-        "Exercise for at least 15 minutes.",
+    "Don't drink any sugary beverages today.",
 
-        "Write down the three things that matter most today.",
+    "Meditate for 10 minutes.",
 
-        "Spend 20 minutes improving one skill.",
+    "Clean your room for 20 minutes.",
 
-        "Complete a task before opening social media.",
+    "Learn 10 new words.",
 
-        "Remove one unnecessary distraction from your environment.",
+    "Do 30 squats.",
 
-        "Start something you've been waiting for the perfect time to do.",
+    "Call or message someone you care about.",
 
-        "Spend 15 minutes planning tomorrow.",
+    "Read for 30 minutes without checking your phone.",
 
-        "Do one uncomfortable thing that moves you forward.",
+    "Spend 20 minutes organizing your workspace.",
 
-        "Put your phone away and focus for 20 minutes.",
+    "Don't eat processed food today.",
 
-        "Finish something you started but never completed.",
+    "Hold a plank for 60 seconds.",
 
-        "Learn one thing you didn't know yesterday.",
+    "Write down 3 things that made you happy today.",
 
-        "Spend 15 minutes fixing something you've been ignoring.",
+    "Spend 30 minutes doing something creative.",
 
-        "Take 20 minutes to work on your biggest current goal.",
+    "Take at least 5,000 steps today.",
 
-        "Say no to one unnecessary distraction today.",
+    "Plan tomorrow before going to sleep.",
 
-        "Wake up one small part of your environment by organizing it.",
+    "Go outside and spend 20 minutes in fresh air.",
 
-        "Spend 20 minutes creating instead of consuming.",
+    "Read one complete chapter of a book.",
 
-        "Do the hardest small task on your list first.",
+    "Do 50 jumping jacks.",
 
-        "Take a proper break without touching your phone.",
+    "Keep your phone away for 2 hours.",
 
-        "Write down one thing you want to become better at.",
+    "Write a 200-word summary of what you read today.",
 
-        "Spend 20 focused minutes on something that matters.",
+    "Spend 15 minutes sitting quietly without your phone.",
 
-        "Replace 20 minutes of scrolling with something productive.",
+    "Complete one important task before opening social media.",
 
-        "Do something today that your tomorrow-self will appreciate.",
+    "Eat at least two servings of fruit today.",
 
-        "Finish today's most important unfinished task."
+    "Do 20 lunges.",
 
-    ];
+    "Spend 30 minutes learning something new.",
+
+    "Compliment someone sincerely.",
+
+    "Write down your top 3 priorities for today.",
+
+    "Stretch for 15 minutes.",
+
+    "Don't eat junk food today.",
+
+    "Write down 5 interesting things you learned today.",
+
+    "Spend 20 minutes outside without using your phone.",
+
+    "Do a 15-minute full-body workout.",
+
+    "Write down everything you need to accomplish tomorrow.",
+
+    "Spend 30 minutes reading instead of scrolling.",
+
+    "Take 20 slow, deep breaths.",
+
+    "Organize one drawer, shelf, or cupboard.",
+
+    "Teach someone one thing you learned recently.",
+
+    "Keep your phone away while working for 60 minutes.",
+
+    "Spend 20 minutes doing any physical activity.",
+
+    "Write down 10 things you want to experience in your lifetime.",
+
+    "Turn off unnecessary notifications for the day.",
+
+    "Go one full day without ordering junk food.",
+
+    "Write down one thing you learned from a recent mistake.",
+
+    "Spend 10 minutes focusing only on your breathing.",
+
+    "Read for 20 minutes before going to sleep.",
+
+    "Spend 30 minutes without using any screens.",
+
+    "Take 5 photographs of interesting things around you.",
+
+    "Write down 5 things you appreciate about your life.",
+
+    "Spend 20 minutes organizing your digital files.",
+
+    "Go one hour without social media.",
+
+    "Spend 30 minutes on a hobby.",
+
+    "Do something kind for someone today.",
+
+    "Eat one meal without using your phone.",
+
+    "Write 500 words about something you're interested in."
+
+];
 
 
     /* =====================================================

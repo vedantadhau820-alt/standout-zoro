@@ -1,4 +1,4 @@
-const CACHE_NAME = "standout-v2.5 beta";
+const CACHE_NAME = "standout-v2.5 beta 1";
 //const MEDIA_CACHE = "standout-media";
 // NEVER versioned
 

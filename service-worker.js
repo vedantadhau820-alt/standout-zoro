@@ -8,6 +8,14 @@ const FONT_AWESOME_CACHE =
 const BACKGROUND_CACHE =
   "standout-background-v7";
 
+const WELCOME_CACHE =
+  "standout-welcome-v5";
+
+
+const WELCOME_ASSETS = [
+  "/welcome.mp4"
+];
+
 
 const FONT_AWESOME_FILES = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
@@ -261,7 +269,6 @@ const BACKGROUND_ASSETS = [
 
   // Video
   "/AchievedGoal.mp4",
-  "/welcome.mp4",
 
   // Badges
   "/badges/aug-2026.png",

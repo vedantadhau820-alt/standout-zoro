@@ -280,7 +280,7 @@ const BACKGROUND_ASSETS = [
   "/Music/m4.mp3",
   "/Music/m5.mp3",
   "/Music/m6.mp3",
-  "/Music/MintCard.mp3",
+  "/Music/CardMint.mp3",
 
   // Video
   "/AchievedGoal.mp4",

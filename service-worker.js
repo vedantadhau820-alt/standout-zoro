@@ -1,6 +1,4 @@
-const CACHE_NAME = "standout-v2.5 beta 3";
-//const MEDIA_CACHE = "standout-media";
-// NEVER versioned
+const CACHE_NAME = "standout-v2.5 beta 4";
 
 const FONT_AWESOME_CACHE =
   "standout-fontawesome-v1";
@@ -9,13 +7,21 @@ const BACKGROUND_CACHE =
   "standout-background-v8";
 
 const WELCOME_CACHE =
-  "standout-welcome-v5";
+  "standout-welcome-v6";
 
+
+/* =========================================================
+   WELCOME VIDEO
+========================================================= */
 
 const WELCOME_ASSETS = [
   "/welcome.mp4"
 ];
 
+
+/* =========================================================
+   FONT AWESOME
+========================================================= */
 
 const FONT_AWESOME_FILES = [
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
@@ -25,7 +31,12 @@ const FONT_AWESOME_FILES = [
 ];
 
 
+/* =========================================================
+   APP SHELL
+========================================================= */
+
 const APP_SHELL = [
+
   "/",
   "/index.html",
   "/manifest.json",
@@ -68,6 +79,10 @@ const APP_SHELL = [
   "/icon.jpeg"
 ];
 
+
+/* =========================================================
+   BACKGROUND ASSETS
+========================================================= */
 
 const BACKGROUND_ASSETS = [
 
@@ -280,9 +295,9 @@ const BACKGROUND_ASSETS = [
 ];
 
 
-/* ===========================
+/* =========================================================
    INSTALL
-=========================== */
+========================================================= */
 
 self.addEventListener("install", event => {
 
@@ -292,19 +307,12 @@ self.addEventListener("install", event => {
 
     (async () => {
 
-      const appCache =
-        await caches.open(CACHE_NAME);
-
-
       /* =====================================================
          APP SHELL
-
-         IMPORTANT:
-         Do NOT use addAll() here.
-
-         Every file is cached independently so that
-         one missing file cannot break SW installation.
       ===================================================== */
+
+      const appCache =
+        await caches.open(CACHE_NAME);
 
       await Promise.all(
 
@@ -321,16 +329,12 @@ self.addEventListener("install", event => {
                   }
                 );
 
-
-              if (
-                response.ok
-              ) {
+              if (response.ok) {
 
                 await appCache.put(
                   url,
                   response.clone()
                 );
-
 
                 console.log(
                   "✅ Shell cached:",
@@ -393,9 +397,7 @@ self.addEventListener("install", event => {
             );
 
 
-          if (
-            response.ok
-          ) {
+          if (response.ok) {
 
             await fontAwesomeCache.put(
               url,
@@ -422,6 +424,67 @@ self.addEventListener("install", event => {
 
       }
 
+
+      /* =====================================================
+         WELCOME VIDEO
+      ===================================================== */
+
+      const welcomeCache =
+        await caches.open(
+          WELCOME_CACHE
+        );
+
+
+      for (
+        const url of WELCOME_ASSETS
+      ) {
+
+        try {
+
+          const response =
+            await fetch(
+              url,
+              {
+                cache: "no-cache"
+              }
+            );
+
+
+          if (response.ok) {
+
+            await welcomeCache.put(
+              url,
+              response.clone()
+            );
+
+
+            console.log(
+              "✅ Welcome video cached:",
+              url
+            );
+
+          } else {
+
+            console.warn(
+              "⚠️ Welcome video unavailable:",
+              url,
+              response.status
+            );
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "⚠️ Welcome video cache failed:",
+            url,
+            error
+          );
+
+        }
+
+      }
+
     })()
 
   );
@@ -432,9 +495,9 @@ self.addEventListener("install", event => {
 });
 
 
-/* ===========================
+/* =========================================================
    MESSAGE
-=========================== */
+========================================================= */
 
 self.addEventListener(
   "message",
@@ -452,9 +515,9 @@ self.addEventListener(
 );
 
 
-/* ===========================
+/* =========================================================
    ACTIVATE
-=========================== */
+========================================================= */
 
 self.addEventListener(
   "activate",
@@ -486,7 +549,7 @@ self.addEventListener(
                 key === CACHE_NAME ||
                 key === FONT_AWESOME_CACHE ||
                 key === BACKGROUND_CACHE ||
-                key == WELCOME_CACHE
+                key === WELCOME_CACHE
               ) {
 
                 return Promise.resolve();
@@ -504,10 +567,9 @@ self.addEventListener(
         );
 
 
-        /*
-         * Cache large background assets
-         * after activation.
-         */
+        /* =====================================================
+           CACHE LARGE BACKGROUND ASSETS
+        ===================================================== */
 
         cacheBackgroundAssets()
           .catch(
@@ -579,14 +641,91 @@ self.addEventListener(
 
     /* =====================================================
        IGNORE NON-GET REQUESTS
-
-       POST / PUT / DELETE etc. should never be placed
-       into the Cache API.
     ===================================================== */
 
     if (
       request.method !== "GET"
     ) {
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       WELCOME VIDEO
+       
+       CACHE FIRST
+    ===================================================== */
+
+    if (
+      WELCOME_ASSETS.includes(pathname)
+    ) {
+
+      event.respondWith(
+
+        (async () => {
+
+          const cached =
+            await caches.match(
+              request
+            );
+
+
+          if (cached) {
+
+            console.log(
+              "🎬 Welcome video served from cache"
+            );
+
+            return cached;
+
+          }
+
+
+          try {
+
+            const response =
+              await fetch(
+                request
+              );
+
+
+            if (
+              response.ok
+            ) {
+
+              const cache =
+                await caches.open(
+                  WELCOME_CACHE
+                );
+
+
+              await cache.put(
+                request,
+                response.clone()
+              );
+
+            }
+
+
+            return response;
+
+          } catch (error) {
+
+            console.warn(
+              "❌ Welcome video unavailable:",
+              error
+            );
+
+            throw error;
+
+          }
+
+        })()
+
+      );
+
 
       return;
 
@@ -616,9 +755,7 @@ self.addEventListener(
             );
 
 
-          if (
-            cached
-          ) {
+          if (cached) {
 
             return cached;
 
@@ -687,21 +824,6 @@ self.addEventListener(
        APP REQUESTS
 
        CACHE FIRST
-
-       If the resource is already cached:
-           → return cache
-
-       If not:
-           → try network
-
-       If network succeeds:
-           → cache it
-
-       If network fails AND this is navigation:
-           → return index.html
-
-       If network fails for another request:
-           → let request fail normally
     ===================================================== */
 
     event.respondWith(
@@ -718,9 +840,7 @@ self.addEventListener(
           );
 
 
-        if (
-          cached
-        ) {
+        if (cached) {
 
           return cached;
 
@@ -741,15 +861,12 @@ self.addEventListener(
 
           /*
            * 3. RUNTIME CACHE
-           *
-           * Only cache successful
-           * same-origin GET requests.
            */
 
           if (
             response.ok &&
             requestURL.origin ===
-              self.location.origin
+            self.location.origin
           ) {
 
             const cache =
@@ -772,9 +889,6 @@ self.addEventListener(
 
           /*
            * 4. OFFLINE NAVIGATION
-           *
-           * Only HTML page navigation gets
-           * the index.html fallback.
            */
 
           if (
@@ -787,9 +901,7 @@ self.addEventListener(
               );
 
 
-            if (
-              offlinePage
-            ) {
+            if (offlinePage) {
 
               console.log(
                 "📴 Offline → index.html"
@@ -805,9 +917,6 @@ self.addEventListener(
 
           /*
            * 5. Other resources
-           *
-           * Do not return index.html for CSS,
-           * JS, images, audio, etc.
            */
 
           throw error;
@@ -851,9 +960,7 @@ async function cacheBackgroundAssets() {
         );
 
 
-      if (
-        existing
-      ) {
+      if (existing) {
 
         console.log(
           "Already cached:",
@@ -927,4 +1034,4 @@ async function cacheBackgroundAssets() {
     "✅ Background asset caching finished"
   );
 
-  }
+}

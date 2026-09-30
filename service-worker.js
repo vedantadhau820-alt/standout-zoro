@@ -21,6 +21,9 @@ const APP_SHELL = [
   "/",
   "/index.html",
   "/manifest.json",
+  "/documentation.html",
+  "/standout-guide.html",
+  "/drop-info.html",
 
   // CSS
   "/CSS/base.css",
@@ -33,6 +36,11 @@ const APP_SHELL = [
   "/CSS/badges.css",
   "/CSS/momentum.css",
   "/CSS/monthly-report.css",
+  "/CSS/welcome.css",
+  "/CSS/daily-challenge.css",
+  "/CSS/season.css",
+  "/CSS/mastery.css",
+  "/CSS/drop-info.css",
 
   // JS
   "/JS/cards.js",
@@ -42,6 +50,11 @@ const APP_SHELL = [
   "/JS/custom-cards.js",
   "/JS/momentum.js",
   "/JS/sound.js",
+  "/JS/welcome.js",
+  "/JS/daily-challenge.js",
+  "/JS/season.js",
+  "/JS/mastery.js",
+  "/JS/drop-info.js",
 
   // Icon
   "/icon.jpeg"

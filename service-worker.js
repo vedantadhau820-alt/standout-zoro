@@ -1,10 +1,10 @@
-const CACHE_NAME = "standout-v2.5 beta 1";
+const CACHE_NAME = "standout-v2.5 beta 2";
 
 const FONT_AWESOME_CACHE =
   "standout-fontawesome-v1";
 
 const BACKGROUND_CACHE =
-  "standout-background-v9";
+  "standout-background-v1";
 
 const WELCOME_CACHE =
   "standout-welcome-v6";

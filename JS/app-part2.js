@@ -2426,21 +2426,74 @@ const achievements = [
 // LOAD + MIGRATE ACHIEVEMENTS
 // =========================================================
 
-let achievementsData = [];
+// =========================================================
+// ACHIEVEMENT DATA SYNC
+// =========================================================
 
-try {
-    const savedAchievements =
-        JSON.parse(localStorage.getItem("achievements"));
+function syncAchievements() {
 
-    if (Array.isArray(savedAchievements)) {
-        achievementsData = savedAchievements;
+    let savedAchievements = [];
+
+    try {
+        const stored =
+            JSON.parse(localStorage.getItem("achievements"));
+
+        if (Array.isArray(stored)) {
+            savedAchievements = stored;
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Failed to load saved achievements:",
+            error
+        );
+
     }
-} catch (error) {
-    console.warn(
-        "Failed to load saved achievements:",
-        error
+
+    // Build the new achievement list
+    // using the CURRENT achievements array
+    const syncedAchievements = achievements.map(current => {
+
+        const old = savedAchievements.find(
+            saved => saved.id === current.id
+        );
+
+        // New achievement
+        if (!old) {
+
+            return {
+                ...current,
+                unlocked: false,
+                unlockedAt: null
+            };
+
+        }
+
+        // Existing achievement
+        // Keep progress, but use current
+        // title / description / order.
+        return {
+            ...current,
+            unlocked: old.unlocked === true,
+            unlockedAt: old.unlockedAt || null
+        };
+
+    });
+
+    // Save the synchronized list
+    localStorage.setItem(
+        "achievements",
+        JSON.stringify(syncedAchievements)
     );
+
+    return syncedAchievements;
 }
+
+
+// Actual achievement data used by the app
+let achievementsData = syncAchievements();
+
 
 // Add any new achievement definitions that
 // don't exist in the user's saved data.

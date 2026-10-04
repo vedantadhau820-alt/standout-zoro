@@ -3212,6 +3212,12 @@ const missionMilestones = [1];
 for (let i = 5; i <= 250; i += 5) {
     missionMilestones.push(i);
 }
+for (let i = 260; i <= 500; i += 10) {
+    missionMilestones.push(i);
+}
+for (let i = 500; i <= 1000; i += 50) {
+    missionMilestones.push(i);
+}
 
 function addMission() {
 

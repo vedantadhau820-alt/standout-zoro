@@ -3885,11 +3885,11 @@ function completeMission(btn) {
        SUCCESSFUL COMPLETION
     ===================================================== */
 
-    const canEarnImprovementPoint =
-    dailyImprovementCount < DAILY_IMPROVEMENT_LIMIT;
+    // Lifetime mission completion
+completedMissionCount++;
 
-if (canEarnImprovementPoint) {
-    completedMissionCount++;
+// Improvement Point is separately limited to 10/day
+if (dailyImprovementCount < DAILY_IMPROVEMENT_LIMIT) {
     dailyImprovementCount++;
     completedMissions++;
 }

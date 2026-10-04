@@ -181,9 +181,8 @@ function increaseSkillXP(skillName, amount) {
 
 function checkMissionAchievements() {
     missionMilestones.forEach(m => {
-        if (completedMissionCount >= m) {
+        if (completedMissionCount === m)
             unlockAchievement("mission" + m);
-        }
     });
 }
 

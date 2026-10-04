@@ -3885,15 +3885,14 @@ function completeMission(btn) {
        SUCCESSFUL COMPLETION
     ===================================================== */
 
-    // Lifetime mission completion
-completedMissionCount++;
+    const canEarnImprovementPoint =
+    dailyImprovementCount < DAILY_IMPROVEMENT_LIMIT;
 
-// Improvement Point is separately limited to 10/day
-if (dailyImprovementCount < DAILY_IMPROVEMENT_LIMIT) {
+if (canEarnImprovementPoint) {
+    completedMissionCount++;
     dailyImprovementCount++;
     completedMissions++;
 }
-
 const isMissionAchievement =
     missionMilestones.includes(completedMissions);
 

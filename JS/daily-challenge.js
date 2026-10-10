@@ -726,12 +726,12 @@ function spawnDailyChallengeXP() {
 
             particle.style.setProperty(
                 "--travel-x",
-                `${targetX - startX}px`
+                `${targetX - startX - 5}px`
             );
 
             particle.style.setProperty(
                 "--travel-y",
-                `${targetY - startY}px`
+                `${targetY - startY - 5}px`
             );
 
             const duration = reducedMotion

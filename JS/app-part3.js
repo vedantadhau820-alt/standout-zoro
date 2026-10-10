@@ -818,7 +818,47 @@ function renderGoals() {
 
     container.innerHTML = "";
 
-    goalsData.forEach(goal => {
+    
+    
+    const activeGoals = goalsData.filter(
+        goal => !goal.achieved
+    );
+    
+    const achievedGoals = goalsData.filter(
+        goal => goal.achieved
+    );
+    
+    
+    const achievedSection = document.createElement("div");
+    achievedSection.className = "achieved-goals-section";
+
+    const achievedToggle = document.createElement("button");
+    achievedToggle.type = "button";
+    achievedToggle.className = "achieved-goals-toggle";
+    achievedToggle.innerHTML = `
+    <span class="achieved-goals-label">
+        View Achieved Goals
+        <span class="achieved-goals-count">${achievedGoals.length}</span>
+    </span>
+    <span class="achieved-goals-chevron">▼</span>
+`;
+
+    const achievedList = document.createElement("div");
+    achievedList.className = "achieved-goals-list";
+    achievedList.hidden = true;
+
+    achievedToggle.addEventListener("click", () => {
+        achievedList.hidden = !achievedList.hidden;
+
+        achievedToggle.querySelector(
+            ".achieved-goals-chevron"
+        ).textContent = achievedList.hidden ? "▼" : "▲";
+    });
+
+    achievedSection.appendChild(achievedToggle);
+    achievedSection.appendChild(achievedList);
+
+    [...activeGoals, ...achievedGoals].forEach(goal => {
 
         const div =
             document.createElement("div");
@@ -943,9 +983,17 @@ function renderGoals() {
 </div>
         `;
 
-        container.appendChild(div);
+        if (goal.achieved) {
+            achievedList.appendChild(div);
+        } else {
+            container.appendChild(div);
+        }
     });
 
+    if (achievedGoals.length > 0) {
+        container.prepend(achievedSection);
+    }
+    
     updateGoalTimers();
 }
 

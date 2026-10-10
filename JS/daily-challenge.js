@@ -26,127 +26,127 @@
 
     const CHALLENGES = [
 
-    "Do 20 pushups.",
+        "Do 20 pushups.",
 
-    "Write down 5 things you're grateful for.",
+        "Write down 5 things you're grateful for.",
 
-    "Read 10 pages of a book.",
+        "Read 10 pages of a book.",
 
-    "Drink 2 liters of water today.",
+        "Drink 2 liters of water today.",
 
-    "Work for 25 minutes without checking your phone.",
+        "Work for 25 minutes without checking your phone.",
 
-    "Walk for 30 minutes.",
+        "Walk for 30 minutes.",
 
-    "Write down your thoughts in 500 words.",
+        "Write down your thoughts in 500 words.",
 
-    "Don't drink any sugary beverages today.",
+        "Don't drink any sugary beverages today.",
 
-    "Meditate for 10 minutes.",
+        "Meditate for 10 minutes.",
 
-    "Clean your room for 20 minutes.",
+        "Clean your room for 20 minutes.",
 
-    "Learn 10 new words.",
+        "Learn 10 new words.",
 
-    "Do 30 squats.",
+        "Do 30 squats.",
 
-    "Call or message someone you care about.",
+        "Call or message someone you care about.",
 
-    "Read for 30 minutes without checking your phone.",
+        "Read for 30 minutes without checking your phone.",
 
-    "Spend 20 minutes organizing your workspace.",
+        "Spend 20 minutes organizing your workspace.",
 
-    "Don't eat processed food today.",
+        "Don't eat processed food today.",
 
-    "Hold a plank for 60 seconds.",
+        "Hold a plank for 60 seconds.",
 
-    "Write down 3 things that made you happy today.",
+        "Write down 3 things that made you happy today.",
 
-    "Spend 30 minutes doing something creative.",
+        "Spend 30 minutes doing something creative.",
 
-    "Take at least 5,000 steps today.",
+        "Take at least 5,000 steps today.",
 
-    "Plan tomorrow before going to sleep.",
+        "Plan tomorrow before going to sleep.",
 
-    "Go outside and spend 20 minutes in fresh air.",
+        "Go outside and spend 20 minutes in fresh air.",
 
-    "Read one complete chapter of a book.",
+        "Read one complete chapter of a book.",
 
-    "Do 50 jumping jacks.",
+        "Do 50 jumping jacks.",
 
-    "Keep your phone away for 2 hours.",
+        "Keep your phone away for 2 hours.",
 
-    "Write a 200-word summary of what you read today.",
+        "Write a 200-word summary of what you read today.",
 
-    "Spend 15 minutes sitting quietly without your phone.",
+        "Spend 15 minutes sitting quietly without your phone.",
 
-    "Complete one important task before opening social media.",
+        "Complete one important task before opening social media.",
 
-    "Eat at least two servings of fruit today.",
+        "Eat at least two servings of fruit today.",
 
-    "Do 20 lunges.",
+        "Do 20 lunges.",
 
-    "Spend 30 minutes learning something new.",
+        "Spend 30 minutes learning something new.",
 
-    "Compliment someone sincerely.",
+        "Compliment someone sincerely.",
 
-    "Write down your top 3 priorities for today.",
+        "Write down your top 3 priorities for today.",
 
-    "Stretch for 15 minutes.",
+        "Stretch for 15 minutes.",
 
-    "Don't eat junk food today.",
+        "Don't eat junk food today.",
 
-    "Take 20 slow, deep breaths.",
+        "Take 20 slow, deep breaths.",
 
-    "Write down 5 interesting things you learned today.",
+        "Write down 5 interesting things you learned today.",
 
-    "Spend 20 minutes outside without using your phone.",
+        "Spend 20 minutes outside without using your phone.",
 
-    "Do a 15-minute full-body workout.",
+        "Do a 15-minute full-body workout.",
 
-    "Write down everything you need to accomplish tomorrow.",
+        "Write down everything you need to accomplish tomorrow.",
 
-    "Spend 30 minutes reading instead of scrolling.",
+        "Spend 30 minutes reading instead of scrolling.",
 
-    "Organize one drawer, shelf, or cupboard.",
+        "Organize one drawer, shelf, or cupboard.",
 
-    "Teach someone one thing you learned recently.",
+        "Teach someone one thing you learned recently.",
 
-    "Keep your phone away while working for 60 minutes.",
+        "Keep your phone away while working for 60 minutes.",
 
-    "Spend 20 minutes doing any physical activity.",
+        "Spend 20 minutes doing any physical activity.",
 
-    "Write down 10 things you want to experience in your lifetime.",
+        "Write down 10 things you want to experience in your lifetime.",
 
-    "Turn off unnecessary notifications for the day.",
+        "Turn off unnecessary notifications for the day.",
 
-    "Go one full day without ordering junk food.",
+        "Go one full day without ordering junk food.",
 
-    "Write down one thing you learned from a recent mistake.",
+        "Write down one thing you learned from a recent mistake.",
 
-    "Spend 10 minutes focusing only on your breathing.",
+        "Spend 10 minutes focusing only on your breathing.",
 
-    "Read for 20 minutes before going to sleep.",
+        "Read for 20 minutes before going to sleep.",
 
-    "Spend 30 minutes without using any screens.",
+        "Spend 30 minutes without using any screens.",
 
-    "Take 5 photographs of interesting things around you.",
+        "Take 5 photographs of interesting things around you.",
 
-    "Write down 5 things you appreciate about your life.",
+        "Write down 5 things you appreciate about your life.",
 
-    "Spend 20 minutes organizing your digital files.",
+        "Spend 20 minutes organizing your digital files.",
 
-    "Go one hour without social media.",
+        "Go one hour without social media.",
 
-    "Spend 30 minutes on a hobby.",
+        "Spend 30 minutes on a hobby.",
 
-    "Do something kind for someone today.",
+        "Do something kind for someone today.",
 
-    "Eat one meal without using your phone.",
+        "Eat one meal without using your phone.",
 
-    "Write 500 words about something you're interested in."
+        "Write 500 words about something you're interested in."
 
-];
+    ];
 
 
     /* =====================================================
@@ -667,6 +667,11 @@
 
                 awardReward();
 
+                // Play the dedicated Daily Challenge sound.
+                if (typeof window.playAppTone === "function") {
+                    window.playAppTone("dailyChallenge");
+                }
+
                 state.completed = true;
 
                 saveState(state);
@@ -697,33 +702,33 @@
    INITIALIZE
 ===================================================== */
 
-/*
- * Expose Daily Challenge refresh to the main app.
- * This allows the challenge to be initialized whenever
- * the application itself initializes.
- */
-window.refreshDailyChallenge = render;
+    /*
+     * Expose Daily Challenge refresh to the main app.
+     * This allows the challenge to be initialized whenever
+     * the application itself initializes.
+     */
+    window.refreshDailyChallenge = render;
 
 
-/*
- * Initial render.
- *
- * If this script loads after the DOM is ready,
- * render immediately. Otherwise wait for DOMContentLoaded.
- */
-if (document.readyState === "loading") {
+    /*
+     * Initial render.
+     *
+     * If this script loads after the DOM is ready,
+     * render immediately. Otherwise wait for DOMContentLoaded.
+     */
+    if (document.readyState === "loading") {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        render,
-        { once: true }
-    );
+        document.addEventListener(
+            "DOMContentLoaded",
+            render,
+            { once: true }
+        );
 
-} else {
+    } else {
 
-    render();
+        render();
 
-}
+    }
 
 
 })();

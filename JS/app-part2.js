@@ -157,146 +157,164 @@ function calculateMissionPerformance(year, month) {
    MONTHLY REPORT — MONTH OVERVIEW
 ========================================================= */
 
-function renderMonthlyReport() {
+function renderMonthlyReport(selectedYear, selectedMonth) {
 
     const now = new Date();
 
-    const year =
-        now.getFullYear();
+    // Default to the current month on first load.
+    const year = selectedYear ?? now.getFullYear();
+    const month = selectedMonth ?? now.getMonth();
 
-    const month =
-        now.getMonth();
+    const metrics = calculateMonthMetrics(year, month);
 
-    const metrics =
-        calculateMonthMetrics(
-            year,
-            month
-        );
+    const monthName = new Date(year, month, 1)
+        .toLocaleDateString([], {
+            month: "long",
+            year: "numeric"
+        });
 
-
-    /* =========================
-       MONTH NAME
-    ========================= */
-
-    const monthName =
-        new Date(
-            year,
-            month,
-            1
-        ).toLocaleDateString(
-            [],
-            {
-                month: "long",
-                year: "numeric"
-            }
-        );
-
-
-    /* =========================
-       UPDATE UI
-    ========================= */
-
-    const monthElement =
-        document.getElementById(
-            "monthlyReportMonth"
-        );
-
-    const consistencyElement =
-        document.getElementById(
-            "monthlyConsistency"
-        );
-
-    const completedElement =
-        document.getElementById(
-            "monthlyCompleted"
-        );
-
-    const missedElement =
-        document.getElementById(
-            "monthlyMissed"
-        );
-
-    const activeDaysElement =
-        document.getElementById(
-            "monthlyActiveDays"
-        );
-
-    const pointsElement =
-        document.getElementById(
-            "monthlyImprovementPoints"
-        );
-
-
-    if (monthElement) {
-        monthElement.textContent =
-            monthName.toUpperCase();
+    // Update the displayed month title.
+    const titleElement = document.getElementById("monthlySummaryTitle");
+    if (titleElement) {
+        titleElement.textContent = monthName;
     }
 
-    if (consistencyElement) {
-        consistencyElement.textContent =
-            `${metrics.consistency}%`;
+    // Update the summary metrics.
+    const consistencyElement = document.getElementById("monthlyConsistency");
+    const completedElement = document.getElementById("monthlyCompleted");
+    const missedElement = document.getElementById("monthlyMissed");
+    const activeDaysElement = document.getElementById("monthlyActiveDays");
+    const pointsElement = document.getElementById("monthlyImprovementPoints");
+
+    if (consistencyElement) consistencyElement.textContent = `${metrics.consistency}%`;
+    if (completedElement) completedElement.textContent = metrics.completed;
+    if (missedElement) missedElement.textContent = metrics.missed;
+    if (activeDaysElement) activeDaysElement.textContent = metrics.activeDays;
+    if (pointsElement) pointsElement.textContent = metrics.improvementPoints;
+
+    // Keep every existing report section in sync with the selected month.
+    renderMonthlyActivityCalendar(year, month);
+    renderMonthlyConsistencyChart(year, month);
+    renderMonthlyMissionPerformance(year, month);
+    renderMonthlyMomentum(year, month);
+    renderMonthlyMomentumChart(year, month);
+    renderMonthlyGoalsProgress(year, month);
+    renderMonthlyInsights(year, month);
+    renderMonthlySummary(year, month);
+    renderMonthlyDailyChallenges(year, month);
+
+    // Keep the dropdown synchronized with the displayed report.
+    const monthSelect = document.getElementById("monthlyReportMonthSelect");
+    if (monthSelect) {
+        const selectedValue = `${year}-${String(month + 1).padStart(2, "0")}`;
+        if (monthSelect.value !== selectedValue) {
+            monthSelect.value = selectedValue;
+        }
     }
-
-    if (completedElement) {
-        completedElement.textContent =
-            metrics.completed;
-    }
-
-    if (missedElement) {
-        missedElement.textContent =
-            metrics.missed;
-    }
-
-    if (activeDaysElement) {
-        activeDaysElement.textContent =
-            metrics.activeDays;
-    }
-
-    if (pointsElement) {
-        pointsElement.textContent =
-            metrics.improvementPoints;
-    }
-
-    renderMonthlyActivityCalendar(
-        year,
-        month
-    );
-
-    renderMonthlyConsistencyChart(
-        year,
-        month
-    );
-
-    renderMonthlyMissionPerformance(
-        year,
-        month
-    );
-
-    renderMonthlyMomentum(
-        year,
-        month
-    );
-    renderMonthlyMomentumChart(
-        year,
-        month
-    );
-    renderMonthlyGoalsProgress(
-        year,
-        month
-    );
-    renderMonthlyInsights(
-        year,
-        month
-    );
-    renderMonthlySummary(
-        year,
-        month
-    );
-    renderMonthlyDailyChallenges(
-        year,
-        month
-    );
 }
+
+/* =========================================================
+   MONTHLY REPORT — MONTH SELECTOR & NAVIGATION
+========================================================= */
+
+function initializeMonthlyReportSelector() {
+    const monthSelect = document.getElementById("monthlyReportMonthSelect");
+    const previousButton = document.getElementById("previousReportMonth");
+    const nextButton = document.getElementById("nextReportMonth");
+
+    if (!monthSelect) return;
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    // Find the earliest month recorded in mission history.
+    const historyDates = Object.keys(missionHistory || {})
+        .filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date))
+        .sort();
+
+    let firstYear = currentYear;
+    let firstMonth = currentMonth;
+
+    if (historyDates.length > 0) {
+        const [year, month] = historyDates[0].split("-").map(Number);
+        firstYear = year;
+        firstMonth = month - 1;
+    }
+
+    // Build options from the earliest recorded month to the current month.
+    monthSelect.innerHTML = "";
+
+    for (
+        let date = new Date(firstYear, firstMonth, 1);
+        date <= new Date(currentYear, currentMonth, 1);
+        date.setMonth(date.getMonth() + 1)
+    ) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const option = document.createElement("option");
+
+        option.value = `${year}-${String(month + 1).padStart(2, "0")}`;
+        option.textContent = date.toLocaleDateString([], {
+            month: "long",
+            year: "numeric"
+        });
+
+        monthSelect.appendChild(option);
+    }
+
+    function showSelectedMonth() {
+        const [year, month] = monthSelect.value.split("-").map(Number);
+
+        if (Number.isInteger(year) && Number.isInteger(month)) {
+            renderMonthlyReport(year, month - 1);
+        }
+
+        updateNavigationButtons();
+    }
+
+    function updateNavigationButtons() {
+        const selectedIndex = monthSelect.selectedIndex;
+
+        if (previousButton) {
+            previousButton.disabled = selectedIndex <= 0;
+        }
+
+        if (nextButton) {
+            nextButton.disabled =
+                selectedIndex === -1 ||
+                selectedIndex >= monthSelect.options.length - 1;
+        }
+    }
+
+    monthSelect.addEventListener("change", showSelectedMonth);
+
+    if (previousButton) {
+        previousButton.addEventListener("click", () => {
+            if (monthSelect.selectedIndex > 0) {
+                monthSelect.selectedIndex--;
+                showSelectedMonth();
+            }
+        });
+    }
+
+    if (nextButton) {
+        nextButton.addEventListener("click", () => {
+            if (monthSelect.selectedIndex < monthSelect.options.length - 1) {
+                monthSelect.selectedIndex++;
+                showSelectedMonth();
+            }
+        });
+    }
+
+    // Open the current month by default.
+    monthSelect.value =
+        `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+
+    updateNavigationButtons();
+    renderMonthlyReport(currentYear, currentMonth);
+}
+
 
 function getMonthlyMomentumHistory(year, month) {
 

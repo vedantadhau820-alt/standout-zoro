@@ -8,7 +8,9 @@ const SOUND_SETTINGS_KEY = "standout_sound_settings";
 const DEFAULT_SOUND_SETTINGS = {
     achievement: "default",
     mission: "default",
-    mint: "default"
+    mint: "default",
+    dailyChallenge: "default",
+    musicCard: "default"
 };
 
 
@@ -17,11 +19,11 @@ const DEFAULT_SOUND_SETTINGS = {
 ========================================================= */
 
 const SOUND_FILES = {
-
     achievement: "Music/Achievements.mp3",
     mission: "Music/Complete.mp3",
-    mint: "Music/CardMint.mp3"
-
+    mint: "Music/CardMint.mp3",
+    dailyChallenge: "Music/DailyChallenge.mp3",
+    musicCard: "Music/MusicCard.mp3"
 };
 
 
@@ -42,54 +44,29 @@ let soundDB = null;
 ========================================================= */
 
 function openSoundDB() {
-
     return new Promise((resolve, reject) => {
-
-        const request =
-            indexedDB.open(
-                SOUND_DB_NAME,
-                SOUND_DB_VERSION
-            );
-
+        const request = indexedDB.open(
+            SOUND_DB_NAME,
+            SOUND_DB_VERSION
+        );
 
         request.onupgradeneeded = event => {
+            const db = event.target.result;
 
-            const db =
-                event.target.result;
-
-            if (
-                !db.objectStoreNames.contains(
-                    SOUND_STORE
-                )
-            ) {
-
-                db.createObjectStore(
-                    SOUND_STORE
-                );
-
+            if (!db.objectStoreNames.contains(SOUND_STORE)) {
+                db.createObjectStore(SOUND_STORE);
             }
-
         };
-
 
         request.onsuccess = event => {
-
-            soundDB =
-                event.target.result;
-
+            soundDB = event.target.result;
             resolve(soundDB);
-
         };
-
 
         request.onerror = () => {
-
             reject(request.error);
-
         };
-
     });
-
 }
 
 
@@ -98,62 +75,34 @@ function openSoundDB() {
 ========================================================= */
 
 function saveCustomTone(type, file) {
-
     return new Promise(async (resolve, reject) => {
-
         try {
+            const db = soundDB || await openSoundDB();
 
-            const db =
-                soundDB ||
-                await openSoundDB();
-
-
-            const transaction =
-                db.transaction(
-                    SOUND_STORE,
-                    "readwrite"
-                );
-
-
-            const store =
-                transaction.objectStore(
-                    SOUND_STORE
-                );
-
-
-            store.put(
-                {
-                    blob: file,
-                    name: file.name,
-                    type: file.type
-                },
-                type
+            const transaction = db.transaction(
+                SOUND_STORE,
+                "readwrite"
             );
 
+            const store = transaction.objectStore(SOUND_STORE);
+
+            store.put({
+                blob: file,
+                name: file.name,
+                type: file.type
+            }, type);
 
             transaction.oncomplete = () => {
-
                 resolve();
-
             };
-
 
             transaction.onerror = () => {
-
-                reject(
-                    transaction.error
-                );
-
+                reject(transaction.error);
             };
-
         } catch (error) {
-
             reject(error);
-
         }
-
     });
-
 }
 
 
@@ -162,58 +111,29 @@ function saveCustomTone(type, file) {
 ========================================================= */
 
 function getCustomTone(type) {
-
     return new Promise(async (resolve, reject) => {
-
         try {
+            const db = soundDB || await openSoundDB();
 
-            const db =
-                soundDB ||
-                await openSoundDB();
+            const transaction = db.transaction(
+                SOUND_STORE,
+                "readonly"
+            );
 
-
-            const transaction =
-                db.transaction(
-                    SOUND_STORE,
-                    "readonly"
-                );
-
-
-            const store =
-                transaction.objectStore(
-                    SOUND_STORE
-                );
-
-
-            const request =
-                store.get(type);
-
+            const store = transaction.objectStore(SOUND_STORE);
+            const request = store.get(type);
 
             request.onsuccess = () => {
-
-                resolve(
-                    request.result || null
-                );
-
+                resolve(request.result || null);
             };
-
 
             request.onerror = () => {
-
-                reject(
-                    request.error
-                );
-
+                reject(request.error);
             };
-
         } catch (error) {
-
             reject(error);
-
         }
-
     });
-
 }
 
 
@@ -222,48 +142,29 @@ function getCustomTone(type) {
 ========================================================= */
 
 function loadSoundSettings() {
-
     try {
-
-        const saved =
-            localStorage.getItem(
-                SOUND_SETTINGS_KEY
-            );
-
+        const saved = localStorage.getItem(SOUND_SETTINGS_KEY);
 
         if (!saved) {
-
-            return {
-                ...DEFAULT_SOUND_SETTINGS
-            };
-
+            return { ...DEFAULT_SOUND_SETTINGS };
         }
-
 
         return {
             ...DEFAULT_SOUND_SETTINGS,
             ...JSON.parse(saved)
         };
-
     } catch (error) {
-
-        console.error(
-            "Failed to load sound settings:",
-            error
-        );
-
-
-        return {
-            ...DEFAULT_SOUND_SETTINGS
-        };
-
+        console.error("Failed to load sound settings:", error);
+        return { ...DEFAULT_SOUND_SETTINGS };
     }
-
 }
 
 
-let soundSettings =
-    loadSoundSettings();
+/* =========================================================
+   CURRENT SOUND SETTINGS
+========================================================= */
+
+let soundSettings = loadSoundSettings();
 
 
 /* =========================================================
@@ -271,25 +172,14 @@ let soundSettings =
 ========================================================= */
 
 function saveSoundSettings() {
-
     try {
-
         localStorage.setItem(
             SOUND_SETTINGS_KEY,
-            JSON.stringify(
-                soundSettings
-            )
+            JSON.stringify(soundSettings)
         );
-
     } catch (error) {
-
-        console.error(
-            "Failed to save sound settings:",
-            error
-        );
-
+        console.error("Failed to save sound settings:", error);
     }
-
 }
 
 
@@ -301,29 +191,29 @@ let activeTone = null;
 let toneTimeout = null;
 let toneRequestId = 0;
 
+
 /* =========================================================
    GLOBAL AUDIO CONTROLLER
    Only one application audio source may play at a time.
 ========================================================= */
 
 function stopAllAppAudio() {
-
-    /* Stop event tone */
+    // Stop event tone
     if (typeof stopActiveTone === "function") {
         stopActiveTone();
     }
 
-    /* Stop Account preview */
+    // Stop Account preview
     if (typeof stopPreview === "function") {
         stopPreview();
     }
 
-    /* Stop timer music */
+    // Stop timer music
     if (typeof stopAllMusic === "function") {
         stopAllMusic();
     }
 
-    /* Stop achievement / goal videos */
+    // Stop achievement / goal videos
     document
         .querySelectorAll(
             ".goal-achievement-video video, #mintReveal video"
@@ -342,40 +232,29 @@ function stopAllAppAudio() {
 }
 
 
+/* =========================================================
+   STOP ACTIVE TONE
+========================================================= */
+
 function stopActiveTone() {
-
     if (toneTimeout) {
-
         clearTimeout(toneTimeout);
-
         toneTimeout = null;
-
     }
-
 
     if (!activeTone) {
         return;
     }
 
-
     activeTone.pause();
-
     activeTone.currentTime = 0;
 
-
     if (activeTone._objectUrl) {
-
-        URL.revokeObjectURL(
-            activeTone._objectUrl
-        );
-
+        URL.revokeObjectURL(activeTone._objectUrl);
     }
 
-
     activeTone = null;
-
 }
-
 
 /* =========================================================
    PLAY APP TONE
@@ -383,189 +262,92 @@ function stopActiveTone() {
 ========================================================= */
 
 async function playAppTone(type) {
+    const setting = soundSettings[type];
 
-    const setting =
-        soundSettings[type];
-
-
-    /* No valid setting */
-
+    // No valid setting
     if (!setting) {
         return null;
     }
 
-
-    /* Sound disabled */
-
+    // Sound disabled
     if (setting === "none") {
         return null;
     }
 
+    // Invalidate older requests that are still loading
+    const requestId = ++toneRequestId;
 
-    /*
-     * Every new tone request invalidates
-     * any older tone request that is still
-     * waiting for its audio to load.
-     */
-
-    const requestId =
-        ++toneRequestId;
-
-
-    /* Stop everything currently playing */
-
+    // Stop everything currently playing
     stopAllAppAudio();
 
-
     let audio = null;
-
 
     /* =====================================================
        CUSTOM TONE
     ===================================================== */
 
     if (setting === "custom") {
-
         try {
-
-            const custom =
-                await getCustomTone(type);
-
-
-            /*
-             * Another tone was requested while
-             * this custom tone was loading.
-             *
-             * This request is now obsolete.
-             */
+            const custom = await getCustomTone(type);
 
             if (requestId !== toneRequestId) {
                 return null;
             }
 
-
-            if (
-                !custom ||
-                !custom.blob
-            ) {
-
-                console.warn(
-                    "Custom tone not found:",
-                    type
-                );
-
+            if (!custom || !custom.blob) {
+                console.warn("Custom tone not found:", type);
                 return null;
-
             }
 
-
-            const url =
-                URL.createObjectURL(
-                    custom.blob
-                );
-
-
-            audio =
-                new Audio(url);
-
-
-            audio._objectUrl =
-                url;
-
+            const url = URL.createObjectURL(custom.blob);
+            audio = new Audio(url);
+            audio._objectUrl = url;
         } catch (error) {
-
-            console.error(
-                "Failed to load custom tone:",
-                error
-            );
-
+            console.error("Failed to load custom tone:", error);
             return null;
-
         }
-
     }
-
 
     /* =====================================================
        DEFAULT TONE
     ===================================================== */
 
     else {
-
-        const src =
-            SOUND_FILES[type];
-
+        const src = SOUND_FILES[type];
 
         if (!src) {
             return null;
         }
 
-
-        audio =
-            new Audio(src);
-
+        audio = new Audio(src);
     }
 
-
-    /*
-     * Check again before allowing the audio
-     * to become active.
-     */
-
+    // Check whether another tone was requested while loading
     if (requestId !== toneRequestId) {
-
         if (audio?._objectUrl) {
-
-            URL.revokeObjectURL(
-                audio._objectUrl
-            );
-
+            URL.revokeObjectURL(audio._objectUrl);
         }
 
         return null;
     }
 
-
     audio.volume = 0.7;
-
     activeTone = audio;
 
-
     audio.onended = () => {
-
-        if (
-            activeTone === audio
-        ) {
-
-            if (
-                audio._objectUrl
-            ) {
-
-                URL.revokeObjectURL(
-                    audio._objectUrl
-                );
-
+        if (activeTone === audio) {
+            if (audio._objectUrl) {
+                URL.revokeObjectURL(audio._objectUrl);
             }
 
             activeTone = null;
-
         }
-
     };
 
-
     try {
-
         await audio.play();
 
-
-        /*
-         * Make sure another tone wasn't
-         * requested while play() was resolving.
-         */
-
         if (requestId !== toneRequestId) {
-
             if (activeTone === audio) {
                 stopActiveTone();
             }
@@ -573,60 +355,27 @@ async function playAppTone(type) {
             return null;
         }
 
-
-        /*
-         * Maximum tone duration:
-         * 10 seconds.
-         */
-
-        toneTimeout =
-            setTimeout(() => {
-
-                if (
-                    activeTone === audio
-                ) {
-
-                    stopActiveTone();
-
-                }
-
-            }, 1000*60);
-
+        // Maximum tone duration: 5 seconds
+        toneTimeout = setTimeout(() => {
+            if (activeTone === audio) {
+                stopActiveTone();
+            }
+        }, 5000);
 
         return audio;
-
     } catch (error) {
+        console.warn("Unable to play tone:", error);
 
-        console.warn(
-            "Unable to play tone:",
-            error
-        );
-
-
-        if (
-            activeTone === audio
-        ) {
-
+        if (activeTone === audio) {
             activeTone = null;
-
         }
 
-
-        if (
-            audio._objectUrl
-        ) {
-
-            URL.revokeObjectURL(
-                audio._objectUrl
-            );
-
+        if (audio._objectUrl) {
+            URL.revokeObjectURL(audio._objectUrl);
         }
-
 
         return null;
-
     }
-
 }
 
 
@@ -634,34 +383,20 @@ async function playAppTone(type) {
    UPDATE SOUND SETTING
 ========================================================= */
 
-function updateSoundSetting(
-    type,
-    value
-) {
-
+function updateSoundSetting(type, value) {
     if (
         !Object.prototype.hasOwnProperty.call(
             DEFAULT_SOUND_SETTINGS,
             type
         )
     ) {
-
         return;
-
     }
 
-
-    soundSettings[type] =
-        value;
-
+    soundSettings[type] = value;
 
     saveSoundSettings();
-
-
-    updateToneControls(
-        type
-    );
-
+    updateToneControls(type);
 }
 
 
@@ -679,60 +414,37 @@ let previewType = null;
 ========================================================= */
 
 function stopPreview() {
-
     if (!previewAudio) {
-
         return;
-
     }
-
 
     previewAudio.pause();
-
     previewAudio.currentTime = 0;
 
-
-    if (
-        previewAudio._objectUrl
-    ) {
-
-        URL.revokeObjectURL(
-            previewAudio._objectUrl
-        );
-
+    if (previewAudio._objectUrl) {
+        URL.revokeObjectURL(previewAudio._objectUrl);
     }
-
 
     if (previewType) {
+        const prefix = {
+            achievement: "achievement",
+            mission: "mission",
+            mint: "mint",
+            dailyChallenge: "dailyChallenge",
+            musicCard: "musicCard"
+        }[previewType] || previewType;
 
-        const prefix =
-            previewType === "achievement"
-                ? "achievement"
-                : previewType === "mission"
-                    ? "mission"
-                    : "mint";
-
-
-        const button =
-            document.getElementById(
-                `${prefix}PreviewBtn`
-            );
-
+        const button = document.getElementById(
+            `${prefix}PreviewBtn`
+        );
 
         if (button) {
-
-            button.textContent =
-                "▶";
-
+            button.textContent = "▶";
         }
-
     }
 
-
     previewAudio = null;
-
     previewType = null;
-
 }
 
 
@@ -742,688 +454,324 @@ function stopPreview() {
 ========================================================= */
 
 async function previewTone(type) {
-
-    /* =====================================================
-       CLICK SAME BUTTON WHILE PLAYING
-       → STOP
-    ===================================================== */
-
-    if (
-        previewAudio &&
-        previewType === type
-    ) {
-
+    // Click the same button while playing to stop
+    if (previewAudio && previewType === type) {
         stopPreview();
-
         return;
-
     }
 
-
-    /* =====================================================
-   STOP ALL OTHER APPLICATION AUDIO
-===================================================== */
-
+    // Stop all other application audio
     stopAllAppAudio();
     stopPreview();
 
+    const setting = soundSettings[type];
 
-    const setting =
-        soundSettings[type];
-
-
-    /* None */
-
-    if (
-        !setting ||
-        setting === "none"
-    ) {
-
+    if (!setting || setting === "none") {
         return;
-
     }
-
 
     let audio = null;
 
-
-    /* =====================================================
-       CUSTOM
-    ===================================================== */
-
-    if (
-        setting === "custom"
-    ) {
-
+    if (setting === "custom") {
         try {
+            const custom = await getCustomTone(type);
 
-            const custom =
-                await getCustomTone(
-                    type
-                );
-
-
-            if (
-                !custom ||
-                !custom.blob
-            ) {
-
+            if (!custom || !custom.blob) {
+                console.warn("Custom tone not found:", type);
                 return;
-
             }
 
-
-            const url =
-                URL.createObjectURL(
-                    custom.blob
-                );
-
-
-            audio =
-                new Audio(url);
-
-
-            audio._objectUrl =
-                url;
-
+            const url = URL.createObjectURL(custom.blob);
+            audio = new Audio(url);
+            audio._objectUrl = url;
         } catch (error) {
-
-            console.error(
-                "Preview custom tone failed:",
-                error
-            );
-
+            console.error("Failed to load preview:", error);
             return;
-
         }
-
-    }
-
-
-    /* =====================================================
-       DEFAULT
-    ===================================================== */
-
-    else {
-
-        const src =
-            SOUND_FILES[type];
-
+    } else {
+        const src = SOUND_FILES[type];
 
         if (!src) {
-
             return;
-
         }
 
-
-        audio =
-            new Audio(src);
-
+        audio = new Audio(src);
     }
 
-
+    previewAudio = audio;
+    previewType = type;
     audio.volume = 0.7;
 
+    const prefix = {
+        achievement: "achievement",
+        mission: "mission",
+        mint: "mint",
+        dailyChallenge: "dailyChallenge",
+        musicCard: "musicCard"
+    }[type] || type;
 
-    previewAudio =
-        audio;
-
-
-    previewType =
-        type;
-
-
-    const prefix =
-        type === "achievement"
-            ? "achievement"
-            : type === "mission"
-                ? "mission"
-                : "mint";
-
-
-    const button =
-        document.getElementById(
-            `${prefix}PreviewBtn`
-        );
-
+    const button = document.getElementById(
+        `${prefix}PreviewBtn`
+    );
 
     if (button) {
-
-        button.textContent =
-            "■";
-
+        button.textContent = "■";
     }
-
 
     audio.onended = () => {
-
-        stopPreview();
-
+        if (previewAudio === audio) {
+            stopPreview();
+        }
     };
 
-
     try {
-
         await audio.play();
-
     } catch (error) {
+        console.warn("Unable to preview tone:", error);
 
-        console.warn(
-            "Preview playback failed:",
-            error
-        );
-
-        stopPreview();
-
+        if (previewAudio === audio) {
+            stopPreview();
+        }
     }
-
 }
-
 
 /* =========================================================
    UPDATE ACCOUNT UI
 ========================================================= */
 
 async function updateToneControls(type) {
+    const prefix = {
+        achievement: "achievement",
+        mission: "mission",
+        mint: "mint",
+        dailyChallenge: "dailyChallenge",
+        musicCard: "musicCard"
+    }[type] || type;
 
-    const prefix =
-        type === "achievement"
-            ? "achievement"
-            : type === "mission"
-                ? "mission"
-                : "mint";
-
-
-    const select =
-        document.getElementById(
-            `${prefix}Tone`
-        );
-
-
-    const choose =
-        document.getElementById(
-            `${prefix}ChooseBtn`
-        );
-
-
-    const preview =
-        document.getElementById(
-            `${prefix}PreviewBtn`
-        );
-
-
-    const fileName =
-        document.getElementById(
-            `${prefix}ToneName`
-        );
-
+    const select = document.getElementById(`${prefix}Tone`);
+    const choose = document.getElementById(`${prefix}ChooseBtn`);
+    const preview = document.getElementById(`${prefix}PreviewBtn`);
+    const fileName = document.getElementById(`${prefix}ToneName`);
 
     if (!select) {
-
         return;
-
     }
 
+    select.value = soundSettings[type];
 
-    select.value =
-        soundSettings[type];
+    /* CUSTOM */
 
-
-    /* =====================================================
-       CUSTOM
-    ===================================================== */
-
-    if (
-        soundSettings[type] === "custom"
-    ) {
-
+    if (soundSettings[type] === "custom") {
         let custom = null;
 
-
         try {
-
-            custom =
-                await getCustomTone(
-                    type
-                );
-
+            custom = await getCustomTone(type);
         } catch (error) {
-
-            console.error(
-                "Failed to read custom tone:",
-                error
-            );
-
+            console.error("Failed to read custom tone:", error);
         }
-
 
         if (choose) {
-
-            choose.textContent =
-                custom?.name
-                    ? "Change"
-                    : "Choose";
-
-
-            choose.title =
-                custom?.name || "";
-
+            choose.textContent = custom?.name ? "Change" : "Choose";
+            choose.title = custom?.name || "";
         }
-
 
         if (preview) {
-
-            preview.disabled =
-                !custom;
-
+            preview.disabled = !custom;
         }
 
-
         if (fileName) {
-
-            fileName.textContent =
-                custom?.name
-                    ? custom.name
-                    : "No custom tone selected";
-
+            fileName.textContent = custom?.name
+                ? custom.name
+                : "No custom tone selected";
         }
 
         return;
-
     }
 
+    /* DEFAULT */
 
-    /* =====================================================
-       DEFAULT
-    ===================================================== */
-
-    if (
-        soundSettings[type] === "default"
-    ) {
-
+    if (soundSettings[type] === "default") {
         if (choose) {
-
-            choose.textContent =
-                "Choose";
-
+            choose.textContent = "Choose";
             choose.title = "";
-
         }
-
 
         if (preview) {
-
-            preview.disabled =
-                false;
-
+            preview.disabled = false;
         }
 
-
         if (fileName) {
-
-            fileName.textContent =
-                "Using default tone";
-
+            fileName.textContent = "Using default tone";
         }
 
         return;
-
     }
 
+    /* NONE */
 
-    /* =====================================================
-       NONE
-    ===================================================== */
-
-    if (
-        soundSettings[type] === "none"
-    ) {
-
+    if (soundSettings[type] === "none") {
         if (choose) {
-
-            choose.textContent =
-                "Choose";
-
+            choose.textContent = "Choose";
             choose.title = "";
-
         }
-
 
         if (preview) {
-
-            preview.disabled =
-                false;
-
+            preview.disabled = false;
         }
-
 
         if (fileName) {
-
-            fileName.textContent =
-                "Sound disabled";
-
+            fileName.textContent = "Sound disabled";
         }
-
     }
-
 }
-
 
 /* =========================================================
    INITIALIZE ACCOUNT SOUND SETTINGS
 ========================================================= */
 
 async function initializeSoundSettings() {
-
-    /* =====================================================
-       OPEN DATABASE
-    ===================================================== */
-
+    // Open database
     try {
-
         await openSoundDB();
-
     } catch (error) {
-
-        console.error(
-            "Sound database failed:",
-            error
-        );
-
+        console.error("Sound database failed:", error);
     }
 
-
     const configs = [
-
         {
             type: "achievement",
-
-            select:
-                "achievementTone",
-
-            file:
-                "achievementToneFile",
-
-            choose:
-                "achievementChooseBtn",
-
-            preview:
-                "achievementPreviewBtn"
-
+            select: "achievementTone",
+            file: "achievementToneFile",
+            choose: "achievementChooseBtn",
+            preview: "achievementPreviewBtn"
         },
-
         {
             type: "mission",
-
-            select:
-                "missionTone",
-
-            file:
-                "missionToneFile",
-
-            choose:
-                "missionChooseBtn",
-
-            preview:
-                "missionPreviewBtn"
-
+            select: "missionTone",
+            file: "missionToneFile",
+            choose: "missionChooseBtn",
+            preview: "missionPreviewBtn"
         },
-
         {
             type: "mint",
-
-            select:
-                "mintTone",
-
-            file:
-                "mintToneFile",
-
-            choose:
-                "mintChooseBtn",
-
-            preview:
-                "mintPreviewBtn"
-
+            select: "mintTone",
+            file: "mintToneFile",
+            choose: "mintChooseBtn",
+            preview: "mintPreviewBtn"
+        },
+        {
+            type: "dailyChallenge",
+            select: "dailyChallengeTone",
+            file: "dailyChallengeToneFile",
+            choose: "dailyChallengeChooseBtn",
+            preview: "dailyChallengePreviewBtn"
+        },
+        {
+            type: "musicCard",
+            select: "musicCardTone",
+            file: "musicCardToneFile",
+            choose: "musicCardChooseBtn",
+            preview: "musicCardPreviewBtn"
         }
-
     ];
 
-
     configs.forEach(config => {
+        const select = document.getElementById(config.select);
+        const fileInput = document.getElementById(config.file);
+        const choose = document.getElementById(config.choose);
+        const preview = document.getElementById(config.preview);
 
-        const select =
-            document.getElementById(
-                config.select
-            );
-
-
-        const fileInput =
-            document.getElementById(
-                config.file
-            );
-
-
-        const choose =
-            document.getElementById(
-                config.choose
-            );
-
-
-        const preview =
-            document.getElementById(
-                config.preview
-            );
-
-
+        // Skip sound types that don't have Account UI controls
         if (!select) {
-
             return;
-
         }
 
+        // Restore saved setting
+        select.value = soundSettings[config.type];
 
-        /* =================================================
-           RESTORE SETTING
-        ================================================= */
+        // Handle setting changes
+        select.addEventListener("change", () => {
+            stopPreview();
 
-        select.value =
-            soundSettings[
-            config.type
-            ];
-
-
-        /* =================================================
-           SELECTOR CHANGE
-        ================================================= */
-
-        select.addEventListener(
-            "change",
-            () => {
-
-                /* Stop preview when changing mode */
-
-                stopPreview();
-
-
-                updateSoundSetting(
-                    config.type,
-                    select.value
-                );
-
-            }
-        );
-
-
-        /* =================================================
-           CHOOSE FILE
-        ================================================= */
-
-        if (
-            choose &&
-            fileInput
-        ) {
-
-            choose.addEventListener(
-                "click",
-                () => {
-
-                    fileInput.click();
-
-                }
+            updateSoundSetting(
+                config.type,
+                select.value
             );
+        });
 
+        // Open custom audio file picker
+        if (choose && fileInput) {
+            choose.addEventListener("click", () => {
+                fileInput.click();
+            });
         }
 
-
-        /* =================================================
-           FILE SELECTED
-        ================================================= */
-
+        // Handle selected custom audio
         if (fileInput) {
+            fileInput.addEventListener("change", async () => {
+                const file = fileInput.files?.[0];
 
-            fileInput.addEventListener(
-                "change",
-                async () => {
-
-                    const file =
-                        fileInput.files?.[0];
-
-
-                    if (!file) {
-
-                        return;
-
-                    }
-
-
-                    /* Validate */
-
-                    if (
-                        !file.type.startsWith(
-                            "audio/"
-                        )
-                    ) {
-
-                        alert(
-                            "Please choose an audio file."
-                        );
-
-
-                        fileInput.value =
-                            "";
-
-
-                        return;
-
-                    }
-
-
-                    try {
-
-                        /* Stop current preview */
-
-                        stopPreview();
-
-
-                        /* Save file */
-
-                        await saveCustomTone(
-                            config.type,
-                            file
-                        );
-
-
-                        /* Automatically select Custom */
-
-                        soundSettings[
-                            config.type
-                        ] = "custom";
-
-
-                        saveSoundSettings();
-
-
-                        select.value =
-                            "custom";
-
-
-                        await updateToneControls(
-                            config.type
-                        );
-
-
-                        console.log(
-                            `Custom ${config.type} tone saved:`,
-                            file.name
-                        );
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "Failed to save custom tone:",
-                            error
-                        );
-
-
-                        alert(
-                            "Could not save this audio file."
-                        );
-
-                    }
-
-
-                    /* Allow selecting same file again */
-
-                    fileInput.value =
-                        "";
-
+                if (!file) {
+                    return;
                 }
-            );
 
-        }
+                // Validate audio file
+                if (!file.type.startsWith("audio/")) {
+                    alert("Please choose an audio file.");
+                    fileInput.value = "";
+                    return;
+                }
 
+                try {
+                    stopPreview();
 
-        /* =================================================
-           PREVIEW
-           ▶ = play
-           ■ = stop
-        ================================================= */
-
-        if (preview) {
-
-            preview.addEventListener(
-                "click",
-                async () => {
-
-                    await previewTone(
-                        config.type
+                    // Save custom sound in IndexedDB
+                    await saveCustomTone(
+                        config.type,
+                        file
                     );
 
-                }
-            );
+                    // Automatically activate custom sound
+                    soundSettings[config.type] = "custom";
 
+                    saveSoundSettings();
+
+                    select.value = "custom";
+
+                    await updateToneControls(config.type);
+
+                    console.log(
+                        `Custom ${config.type} tone saved:`,
+                        file.name
+                    );
+                } catch (error) {
+                    console.error(
+                        "Failed to save custom tone:",
+                        error
+                    );
+
+                    alert("Could not save this audio file.");
+                }
+
+                // Allow selecting the same file again
+                fileInput.value = "";
+            });
         }
 
+        // Preview button
+        if (preview) {
+            preview.addEventListener("click", async () => {
+                await previewTone(config.type);
+            });
+        }
     });
 
-
-    /* =====================================================
-       RESTORE UI
-    ===================================================== */
-
+    // Restore all available Account controls
     await Promise.all(
-
-        configs.map(
-            config =>
-                updateToneControls(
-                    config.type
-                )
+        configs.map(config =>
+            updateToneControls(config.type)
         )
-
     );
-
 }
 
 
@@ -1435,10 +783,3 @@ document.addEventListener(
     "DOMContentLoaded",
     initializeSoundSettings
 );
-
-
-/* =========================================================
-   GLOBAL SOUND API
-========================================================= */
-
-window.playAppTone = playAppTone;

@@ -1,10 +1,10 @@
-const CACHE_NAME = "standout-v2.6 beta 1";
+const CACHE_NAME = "standout-v2.6 beta 2";
 
 const FONT_AWESOME_CACHE =
   "standout-fontawesome-v1";
 
 const BACKGROUND_CACHE =
-  "standout-background-v2";
+  "standout-background-v3";
 
 const WELCOME_CACHE =
   "standout-welcome-v6";
@@ -281,6 +281,7 @@ const BACKGROUND_ASSETS = [
   "/Music/m5.mp3",
   "/Music/m6.mp3",
   "/Music/CardMint.mp3",
+  "/Music/DailyChallenge.mp3",
 
   // Video
   "/AchievedGoal.mp4",

@@ -763,9 +763,9 @@ function spawnDailyChallengeXP() {
         target.classList.add("daily-xp-reward-pop");
 
         // Use your existing app sound, if available.
-        if (typeof window.playAppTone === "function") {
-            window.playAppTone("achievement");
-        }
+        // if (typeof window.playAppTone === "function") {
+        //     window.playAppTone("achievement");
+        // }
     }, finishDelay);
 }
 

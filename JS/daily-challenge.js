@@ -669,8 +669,8 @@ function spawnDailyChallengeXP() {
     if (!target) return;
 
     const rect = target.getBoundingClientRect();
-    const targetX = rect.left + rect.width / 2;
-    const targetY = rect.top + rect.height / 2;
+    const targetX = rect.left + rect.width / 2 - 5;
+    const targetY = rect.top + rect.height / 2 - 5;
 
     const reducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"

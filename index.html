@@ -1063,17 +1063,38 @@
 
             <div class="monthly-summary-header">
 
-                <div>
-                    <span class="monthly-report-eyebrow">
-                        MONTHLY SUMMARY
-                    </span>
+    <div>
+        <span class="monthly-report-eyebrow">
+            MONTHLY SUMMARY
+        </span>
 
-                    <h3 id="monthlySummaryTitle">
-                        August
-                    </h3>
-                </div>
+        <h3 id="monthlySummaryTitle">
+            August
+        </h3>
+    </div>
 
-            </div>
+    <div class="monthly-month-selector">
+        <button
+            type="button"
+            id="previousReportMonth"
+            aria-label="Previous month"
+        >
+            &#8592;
+        </button>
+
+        <select id="monthlyReportMonthSelect" aria-label="Select report month">
+        </select>
+
+        <button
+            type="button"
+            id="nextReportMonth"
+            aria-label="Next month"
+        >
+            &#8594;
+        </button>
+    </div>
+
+</div>
 
 
             <p id="monthlySummaryText" class="monthly-summary-text">

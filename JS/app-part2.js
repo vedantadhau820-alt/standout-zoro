@@ -157,6 +157,7 @@ function calculateMissionPerformance(year, month) {
    MONTHLY REPORT — MONTH OVERVIEW
 ========================================================= */
 
+
 function renderMonthlyReport(selectedYear, selectedMonth) {
 
     const now = new Date();
@@ -315,6 +316,9 @@ function initializeMonthlyReportSelector() {
     renderMonthlyReport(currentYear, currentMonth);
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    initializeMonthlyReportSelector();
+});
 
 function getMonthlyMomentumHistory(year, month) {
 
@@ -2441,10 +2445,6 @@ const achievements = [
 ];
 
 // =========================================================
-// LOAD + MIGRATE ACHIEVEMENTS
-// =========================================================
-
-// =========================================================
 // ACHIEVEMENT DATA SYNC
 // =========================================================
 
@@ -3352,7 +3352,7 @@ for (let i = 5; i <= 250; i += 5) {
 for (let i = 260; i <= 500; i += 10) {
     missionMilestones.push(i);
 }
-for (let i = 500; i <= 1000; i += 50) {
+for (let i = 520; i <= 2000; i += 20) {
     missionMilestones.push(i);
 }
 
@@ -4036,6 +4036,7 @@ if (canEarnImprovementPoint) {
     dailyImprovementCount++;
     completedMissions++;
 }
+
 const isMissionAchievement =
     missionMilestones.includes(completedMissions);
 

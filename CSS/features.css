@@ -1694,3 +1694,67 @@
     display: block;
     width: 100%;
 }
+
+/* Achieved Goals Dropdown */
+.achieved-goals-section {
+    width: 100%;
+    margin-top: 18px;
+}
+
+.achieved-goals-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 16px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    background: var(--card-bg, #151922);
+    color: var(--text-color, #f3f4f6);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.achieved-goals-toggle:hover {
+    border-color: #3B82F6;
+}
+
+.achieved-goals-label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    font-weight: 600;
+}
+
+.achieved-goals-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 20px;
+    background: rgba(59, 130, 246, 0.15);
+    color: #60A5FA;
+    font-size: 12px;
+}
+
+.achieved-goals-chevron {
+    color: #60A5FA;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.achieved-goals-list {
+    display: grid;
+    gap: 10px;
+    padding-top: 12px;
+}
+
+.achieved-goals-list[hidden] {
+    display: none;
+}

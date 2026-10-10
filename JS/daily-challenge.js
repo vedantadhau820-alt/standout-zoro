@@ -650,6 +650,127 @@
        COMPLETE
     ===================================================== */
 
+    /* =========================================================
+   MINECRAFT-STYLE XP ORB COLLECTION
+========================================================= */
+
+    
+
+function spawnDailyChallengeXP() {
+    const target =
+        document.querySelector(
+            ".custom-confirm button, " +
+            ".custom-confirm-dialog button, " +
+            ".confirm-modal button, " +
+            ".modal button"
+        ) ||
+        document.getElementById("missionCounter");
+
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const targetX = rect.left + rect.width / 2;
+    const targetY = rect.top + rect.height / 2;
+
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const particleCount = reducedMotion ? 1 : 28;
+    const launchGap = reducedMotion ? 0 : 55;
+
+    function makeImpact() {
+        const impact = document.createElement("span");
+        impact.className = "daily-xp-impact";
+        impact.style.left = `${targetX}px`;
+        impact.style.top = `${targetY}px`;
+
+        document.body.appendChild(impact);
+        impact.addEventListener(
+            "animationend",
+            () => impact.remove(),
+            { once: true }
+        );
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+            const particle = document.createElement("span");
+            particle.className = "daily-xp-particle";
+
+            // Larger final orbs create a stronger finish.
+            if (i >= particleCount - 4) {
+                particle.style.width = "25px";
+                particle.style.height = "25px";
+            }
+
+            const side = i % 4;
+            let startX, startY;
+
+            if (side === 0) {
+                startX = Math.random() * window.innerWidth;
+                startY = -25;
+            } else if (side === 1) {
+                startX = window.innerWidth + 25;
+                startY = Math.random() * window.innerHeight;
+            } else if (side === 2) {
+                startX = Math.random() * window.innerWidth;
+                startY = window.innerHeight + 25;
+            } else {
+                startX = -25;
+                startY = Math.random() * window.innerHeight;
+            }
+
+            particle.style.left = `${startX}px`;
+            particle.style.top = `${startY}px`;
+
+            particle.style.setProperty(
+                "--travel-x",
+                `${targetX - startX}px`
+            );
+
+            particle.style.setProperty(
+                "--travel-y",
+                `${targetY - startY}px`
+            );
+
+            const duration = reducedMotion
+                ? 1
+                : 850 + Math.random() * 300;
+
+            particle.style.setProperty(
+                "--duration",
+                `${duration}ms`
+            );
+
+            document.body.appendChild(particle);
+
+            particle.addEventListener("animationend", () => {
+                particle.remove();
+
+                // A small flash on each orb's arrival.
+                makeImpact();
+            }, { once: true });
+        }, i * launchGap);
+    }
+
+    const finishDelay =
+        (particleCount - 1) * launchGap + 1250;
+
+    setTimeout(() => {
+        target.classList.remove("daily-xp-reward-pop");
+        void target.offsetWidth;
+        target.classList.add("daily-xp-reward-pop");
+
+        // Use your existing app sound, if available.
+        if (typeof window.playAppTone === "function") {
+            window.playAppTone("achievement");
+        }
+    }, finishDelay);
+}
+
+
+
     function completeChallenge() {
 
         const state = loadState();
@@ -671,6 +792,8 @@
                 if (typeof window.playAppTone === "function") {
                     window.playAppTone("dailyChallenge");
                 }
+
+                spawnDailyChallengeXP();
 
                 state.completed = true;
 

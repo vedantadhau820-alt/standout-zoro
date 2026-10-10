@@ -2545,6 +2545,10 @@ function renderMarketplace(filterGrade = "ALL") {
     cards.forEach(card => {
 
         if (card.seasonReward === true) return;
+
+        // Hide cards already owned by the user
+        if (ownedCards[card.id]) return;
+        
         const isOwned = !!ownedCards[card.id];
         const expired = isExpired(card);
 

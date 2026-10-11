@@ -764,17 +764,7 @@ window.setTimeout(() => {
     }, 450);
 }, cleanupDelay);
 
-    // Play the achievement sound near the end.
-    if (
-        !reducedMotion &&
-        typeof window.playAppTone === "function"
-    ) {
-        window.setTimeout(() => {
-            if (document.body.contains(overlay)) {
-                window.playAppTone("achievement");
-            }
-        }, 1250);
-    }
+    
 }
 
 

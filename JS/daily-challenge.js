@@ -657,118 +657,125 @@
     
 
 function spawnDailyChallengeXP() {
-    const target =
-        document.querySelector(
-            ".custom-confirm button, " +
-            ".custom-confirm-dialog button, " +
-            ".confirm-modal button, " +
-            ".modal button"
-        ) ||
-        document.getElementById("missionCounter");
-
-    if (!target) return;
-
-    const rect = target.getBoundingClientRect();
-    const targetX = rect.left + rect.width / 2 - 5;
-    const targetY = rect.top + rect.height / 2 - 5;
-
     const reducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    const particleCount = reducedMotion ? 1 : 28;
-    const launchGap = reducedMotion ? 0 : 55;
+    // Remove any previous animation.
+    document.querySelector(".rise-above-overlay")?.remove();
 
-    function makeImpact() {
-        const impact = document.createElement("span");
-        impact.className = "daily-xp-impact";
-        impact.style.left = `${targetX}px`;
-        impact.style.top = `${targetY}px`;
+    document.body.classList.add("rise-above-active");
 
-        document.body.appendChild(impact);
-        impact.addEventListener(
-            "animationend",
-            () => impact.remove(),
-            { once: true }
-        );
-    }
+    const overlay = document.createElement("div");
+    overlay.className = "rise-above-overlay";
+    overlay.setAttribute("aria-hidden", "true");
 
-    for (let i = 0; i < particleCount; i++) {
-        setTimeout(() => {
+    const glow = document.createElement("div");
+    glow.className = "rise-above-glow";
+
+    const burst = document.createElement("div");
+    burst.className = "rise-above-burst";
+
+    const trails = document.createElement("div");
+    trails.className = "rise-above-trails";
+
+    const title = document.createElement("div");
+    title.className = "rise-above-title";
+    title.textContent = "CHALLENGE COMPLETE";
+
+    const subtitle = document.createElement("div");
+subtitle.className = "rise-above-subtitle";
+subtitle.textContent = "RISE ABOVE";
+
+
+const reward = document.createElement("div");
+reward.className = "rise-above-reward";
+
+const rewardIcon = document.createElement("span");
+rewardIcon.className = "rise-above-reward-icon";
+rewardIcon.textContent = "✧";
+rewardIcon.setAttribute("aria-hidden", "true");
+
+const rewardAmount = document.createElement("span");
+rewardAmount.className = "rise-above-reward-amount";
+rewardAmount.textContent = "+1";
+
+const rewardLabel = document.createElement("span");
+rewardLabel.className = "rise-above-reward-label";
+rewardLabel.textContent = "IMPROVEMENT POINT";
+
+reward.append(rewardIcon, rewardAmount, rewardLabel);
+
+
+overlay.append(
+    glow,
+    burst,
+    trails,
+    title,
+    subtitle,
+    reward
+);
+
+    // Create rising blue-and-white particles.
+    if (!reducedMotion) {
+        for (let i = 0; i < 26; i++) {
             const particle = document.createElement("span");
-            particle.className = "daily-xp-particle";
-
-            // Larger final orbs create a stronger finish.
-            if (i >= particleCount - 4) {
-                particle.style.width = "25px";
-                particle.style.height = "25px";
-            }
-
-            const side = i % 4;
-            let startX, startY;
-
-            if (side === 0) {
-                startX = Math.random() * window.innerWidth;
-                startY = -25;
-            } else if (side === 1) {
-                startX = window.innerWidth + 25;
-                startY = Math.random() * window.innerHeight;
-            } else if (side === 2) {
-                startX = Math.random() * window.innerWidth;
-                startY = window.innerHeight + 25;
-            } else {
-                startX = -25;
-                startY = Math.random() * window.innerHeight;
-            }
-
-            particle.style.left = `${startX}px`;
-            particle.style.top = `${startY}px`;
+            particle.className = "rise-above-particle";
 
             particle.style.setProperty(
-                "--travel-x",
-                `${targetX - startX - 5}px`
+                "--particle-x",
+                `${Math.random() * 100}%`
             );
 
             particle.style.setProperty(
-                "--travel-y",
-                `${targetY - startY - 5}px`
+                "--particle-delay",
+                `${Math.random() * 420}ms`
             );
-
-            const duration = reducedMotion
-                ? 1
-                : 850 + Math.random() * 300;
 
             particle.style.setProperty(
-                "--duration",
-                `${duration}ms`
+                "--particle-duration",
+                `${850 + Math.random() * 650}ms`
             );
 
-            document.body.appendChild(particle);
+            particle.style.setProperty(
+                "--particle-size",
+                `${2 + Math.random() * 4}px`
+            );
 
-            particle.addEventListener("animationend", () => {
-                particle.remove();
+            particle.style.setProperty(
+                "--particle-drift",
+                `${Math.random() * 100 - 50}px`
+            );
 
-                // A small flash on each orb's arrival.
-                makeImpact();
-            }, { once: true });
-        }, i * launchGap);
+            overlay.appendChild(particle);
+        }
     }
 
-    const finishDelay =
-        (particleCount - 1) * launchGap + 1250;
+    document.body.appendChild(overlay);
 
-    setTimeout(() => {
-        target.classList.remove("daily-xp-reward-pop");
-        void target.offsetWidth;
-        target.classList.add("daily-xp-reward-pop");
+    const cleanupDelay = reducedMotion ? 900 : 2400;
 
-        // Use your existing app sound, if available.
-        // if (typeof window.playAppTone === "function") {
-        //     window.playAppTone("achievement");
-        // }
-    }, finishDelay);
+window.setTimeout(() => {
+    overlay.classList.add("is-fading");
+
+    window.setTimeout(() => {
+        overlay.remove();
+        document.body.classList.remove("rise-above-active");
+    }, 450);
+}, cleanupDelay);
+
+    // Play the achievement sound near the end.
+    if (
+        !reducedMotion &&
+        typeof window.playAppTone === "function"
+    ) {
+        window.setTimeout(() => {
+            if (document.body.contains(overlay)) {
+                window.playAppTone("achievement");
+            }
+        }, 1250);
+    }
 }
-
 
 
     function completeChallenge() {
@@ -801,11 +808,11 @@ function spawnDailyChallengeXP() {
 
                 render();
 
-                if (typeof customAlert === "function") {
-                    customAlert(
-                        "Challenge conquered. +1 Improvement Points."
-                    );
-                }
+                // if (typeof customAlert === "function") {
+                //     customAlert(
+                //         "Challenge conquered. +1 Improvement Points."
+                //     );
+                // }
 
             }
         );

@@ -4040,7 +4040,6 @@ if (canEarnImprovementPoint) {
 
 playAppTone("mission");
 
-    }
 
     recordMissionPerformance(
         li,
@@ -4295,11 +4294,12 @@ function getRepeatKey(date = new Date(), repeat = "daily") {
 
 function refreshRecurringMissions() {
 
-   // Process expired deadlines before resetting recurring missions.
+    // Process expired deadlines before resetting recurring missions.
     if (typeof checkMissedDeadlines === "function") {
         checkMissedDeadlines();
     }
 
+    
     const missions =
         document.querySelectorAll(
             "#mission-list li"

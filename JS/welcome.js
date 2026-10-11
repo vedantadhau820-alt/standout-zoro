@@ -147,6 +147,7 @@
 
         video.load();
 
+       video.volume = 0.2;
 
         /*
          * Browser already has enough data.

@@ -1966,6 +1966,51 @@
 
                 </div>
             </div>
+            
+<!-- DAILY CHALLENGE AUDIO CARD -->
+<div class="sound-setting-row">
+
+    <div class="sound-setting-info">
+        <strong>Daily Challenge</strong>
+        <span>When you complete the Daily Challenge</span>
+    </div>
+
+    <div class="sound-setting-control">
+
+        <select id="dailyChallengeTone">
+            <option value="default">Default</option>
+            <option value="none">None</option>
+            <option value="custom">Custom</option>
+        </select>
+
+        <input
+            type="file"
+            id="dailyChallengeToneFile"
+            accept="audio/*"
+            hidden
+        >
+
+        <button
+            type="button"
+            class="tone-upload-btn"
+            id="dailyChallengeChooseBtn"
+        >
+            Choose
+        </button>
+
+        <button
+            type="button"
+            class="tone-preview-btn"
+            id="dailyChallengePreviewBtn"
+            disabled
+        >
+            ▶
+        </button>
+
+    </div>
+
+</div>
+
         </div>
 
         <!-- =====================================================

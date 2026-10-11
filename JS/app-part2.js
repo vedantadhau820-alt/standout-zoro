@@ -4037,11 +4037,9 @@ if (canEarnImprovementPoint) {
     completedMissions++;
 }
 
-const isMissionAchievement =
-    missionMilestones.includes(completedMissions);
 
-    if (!isMissionAchievement) {
-        playAppTone("mission");
+playAppTone("mission");
+
     }
 
     recordMissionPerformance(

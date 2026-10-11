@@ -181,8 +181,7 @@ function increaseSkillXP(skillName, amount) {
 
 function checkMissionAchievements() {
     missionMilestones.forEach(m => {
-        if (completedMissionCount === m)
-            unlockAchievement("mission" + m);
+        if (completedMissionCount === m) unlockAchievement("mission" + m);
     });
 }
 
@@ -784,32 +783,45 @@ function updateGoal(goalId) {
 /* ---------------------------------------------------------
    RENDER GOALS
 --------------------------------------------------------- */
+
 function getGoalCompletionDate() {
-
-    const date = new Date(getGoalNow());
-
-    return [
-        date.getFullYear(),
-        String(date.getMonth() + 1).padStart(2, "0"),
-        String(date.getDate()).padStart(2, "0")
-    ].join("-");
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(new Date(getGoalNow()));
 }
 
+function getDailyGoalCompletions() {
+    const today = getGoalCompletionDate();
+    let data = {};
 
-function canCompleteGoalToday() {
+    try {
+        data = JSON.parse(
+            localStorage.getItem("dailyGoalCompletions")
+        ) || {};
+    } catch (error) {
+        data = {};
+    }
 
-    const today =
-        getGoalCompletionDate();
+    if (data.date !== today) {
+        data = {
+            date: today,
+            High: false,
+            Medium: false,
+            Low: false
+        };
 
-    const lastGoalCompletionDate =
-        localStorage.getItem(
-            "lastGoalCompletionDate"
+        localStorage.setItem(
+            "dailyGoalCompletions",
+            JSON.stringify(data)
         );
+    }
 
-    return (
-        lastGoalCompletionDate !== today
-    );
+    return data;
 }
+
 
 function renderGoals() {
 
@@ -818,17 +830,17 @@ function renderGoals() {
 
     container.innerHTML = "";
 
-    
-    
+
+
     const activeGoals = goalsData.filter(
         goal => !goal.achieved
     );
-    
+
     const achievedGoals = goalsData.filter(
         goal => goal.achieved
     );
-    
-    
+
+
     const achievedSection = document.createElement("div");
     achievedSection.className = "achieved-goals-section";
 
@@ -993,7 +1005,7 @@ function renderGoals() {
     if (achievedGoals.length > 0) {
         container.prepend(achievedSection);
     }
-    
+
     updateGoalTimers();
 }
 
@@ -1054,14 +1066,16 @@ function markGoalAchieved(goalId) {
    DAILY GOAL COMPLETION LIMIT
 ----------------------------------------- */
 
-    if (!canCompleteGoalToday()) {
 
+    const dailyCompletions = getDailyGoalCompletions();
+
+    if (dailyCompletions[goal.priority] !== false) {
         customAlert(
-            "You can only complete one goal per day."
+            `You have already completed a ${goal.priority} priority goal today. Try another priority or come back tomorrow.`
         );
-
         return;
     }
+
 
     // Safety: cannot complete overdue goals
     if (
@@ -1084,10 +1098,14 @@ function markGoalAchieved(goalId) {
             year: "numeric"
         });
 
+
+    dailyCompletions[goal.priority] = true;
+
     localStorage.setItem(
-        "lastGoalCompletionDate",
-        getGoalCompletionDate()
+        "dailyGoalCompletions",
+        JSON.stringify(dailyCompletions)
     );
+
 
     const reward =
         getGoalReward(goal.priority);
@@ -1590,18 +1608,18 @@ function addCountdown() {
     }
 
     const [datePart, timePart] =
-    dateTime.split("T");
+        dateTime.split("T");
 
-const targetIST =
-    new Date(
-        `${datePart}T${timePart}:00+05:30`
-    );
+    const targetIST =
+        new Date(
+            `${datePart}T${timePart}:00+05:30`
+        );
 
-countdowns.push({
-    title,
-    date: targetIST.toISOString(),
-    startTime: new Date().toISOString()
-});
+    countdowns.push({
+        title,
+        date: targetIST.toISOString(),
+        startTime: new Date().toISOString()
+    });
 
     saveCountdowns();
     renderCountdowns();
@@ -1720,9 +1738,9 @@ function updateTimers() {
 ========================================================= */
 function saveData() {
     localStorage.setItem(
-    "completedMissionCount",
-    completedMissionCount
-);
+        "completedMissionCount",
+        completedMissionCount
+    );
     localStorage.setItem("missionHistory", JSON.stringify(missionHistory));
     // Save deducted flag on missions
     document.querySelectorAll("#mission-list li").forEach(li => {
@@ -3974,11 +3992,11 @@ function showAchievedGoalDeleteConfirmation(
 
 
     customConfirm(
-    `Delete "${goal.title}"?\n\nThis achieved goal will be permanently removed.`,
-    function () {
-        deleteAchievedGoal(goalId);
-    }
-);
+        `Delete "${goal.title}"?\n\nThis achieved goal will be permanently removed.`,
+        function () {
+            deleteAchievedGoal(goalId);
+        }
+    );
 }
 
 

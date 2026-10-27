@@ -671,12 +671,16 @@
             }
 
 
-            const ownedCards =
-                JSON.parse(
-                    localStorage.getItem(
-                        "ownedCards"
-                    ) || "{}"
+            let latestOwnedCards = {};
+
+            try {
+                latestOwnedCards = JSON.parse(
+                    localStorage.getItem("ownedCards") || "{}"
                 );
+            } catch (error) {
+                console.error("Failed to load owned cards:", error);
+                return false;
+            }
 
 
             /*
@@ -707,30 +711,22 @@
              * Do NOT subtract Improvement Points.
              */
 
-            ownedCards[reward.id] = {
+            // Save the latest collection, including the new Season card.
+            localStorage.setItem(
+                "ownedCards",
+                JSON.stringify(latestOwnedCards)
+            );
 
-                mintedAt:
-                    typeof getISTDate ===
-                        "function"
+            // Synchronize the app's in-memory variable.
+            // app-part1.js declares ownedCards with `let`.
+            if (typeof ownedCards !== "undefined") {
+                ownedCards = latestOwnedCards;
+            }
 
-                        ? getISTDate()
-                            .toISOString()
-                            .slice(0, 10)
-
-                        : new Date()
-                            .toISOString()
-                            .slice(0, 10),
-
-                source:
-                    "season",
-
-                seasonId:
-                    SEASON.id,
-
-                seasonLevel:
-                    level
-
-            };
+            // Keep the window property synchronized if it exists.
+            if (typeof window.ownedCards !== "undefined") {
+                window.ownedCards = latestOwnedCards;
+            }
 
 
             localStorage.setItem(

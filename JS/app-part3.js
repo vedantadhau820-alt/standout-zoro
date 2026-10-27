@@ -180,10 +180,104 @@ function increaseSkillXP(skillName, amount) {
 
 
 function checkMissionAchievements() {
-    missionMilestones.forEach(m => {
-        if (completedMissionCount === m) unlockAchievement("mission" + m);
+    // Use the actual achievement definitions so newer milestones
+    // beyond 250 missions are handled as well.
+    const missionAchievements = (Array.isArray(achievementsData) ? achievementsData : [])
+        .map(achievement => ({
+            achievement,
+            threshold: /^mission(\d+)$/.test(achievement.id || "")
+                ? Number((achievement.id || "").match(/^mission(\d+)$/)[1])
+                : NaN
+        }))
+        .filter(item => Number.isFinite(item.threshold) && item.threshold > 0);
+
+    missionAchievements.forEach(({ achievement, threshold }) => {
+        if (completedMissionCount === threshold && !achievement.unlocked) {
+            unlockAchievement(achievement.id);
+        }
     });
+
+    updateMissionProgressCounters();
 }
+
+
+/* =========================================================
+   MISSION PROGRESS COUNTERS
+========================================================= */
+function updateMissionProgressCounters() {
+    const cap = Number(DAILY_IMPROVEMENT_LIMIT) || 10;
+    const dailyCount = Math.min(
+        cap,
+        Math.max(0, Number(localStorage.getItem("dailyImprovementCount")) || Number(dailyImprovementCount) || 0)
+    );
+    const remaining = Math.max(0, cap - dailyCount);
+
+    const capCount = document.getElementById("dailyCapCount");
+    const capRemaining = document.getElementById("dailyCapRemaining");
+    const capBar = document.getElementById("dailyCapBar");
+    const capTrack = capBar?.parentElement;
+
+    if (capCount) capCount.textContent = `${dailyCount} / ${cap}`;
+    if (capRemaining) {
+        capRemaining.textContent = remaining === 0
+            ? "Daily cap reached — no more points today"
+            : `${remaining} task${remaining === 1 ? "" : "s"} left to earn points`;
+    }
+    if (capBar) capBar.style.width = `${Math.min(100, (dailyCount / cap) * 100)}%`;
+    if (capTrack) {
+        capTrack.setAttribute("aria-valuemax", String(cap));
+        capTrack.setAttribute("aria-valuenow", String(dailyCount));
+    }
+
+    const completed = Math.max(0, Number(completedMissionCount) || 0);
+    const missionAchievements = (Array.isArray(achievementsData) ? achievementsData : [])
+        .map(achievement => {
+            const match = /^mission(\d+)$/.exec(achievement.id || "");
+            return match ? { ...achievement, threshold: Number(match[1]) } : null;
+        })
+        .filter(achievement => achievement && achievement.threshold > completed)
+        .sort((a, b) => a.threshold - b.threshold);
+
+    const nextCount = document.getElementById("nextAchievementRemaining");
+    const nextDetail = document.getElementById("nextAchievementDetail");
+    const nextBar = document.getElementById("nextAchievementBar");
+    const nextTrack = nextBar?.parentElement;
+
+    if (!missionAchievements.length) {
+        if (nextCount) nextCount.textContent = "Complete";
+        if (nextDetail) nextDetail.textContent = "All mission achievements have been reached.";
+        if (nextBar) nextBar.style.width = "100%";
+        if (nextTrack) {
+            nextTrack.setAttribute("aria-valuemax", "1");
+            nextTrack.setAttribute("aria-valuenow", "1");
+        }
+        return;
+    }
+
+    const next = missionAchievements[0];
+    const needed = next.threshold - completed;
+    const previousThreshold = (Array.isArray(achievementsData) ? achievementsData : [])
+        .map(achievement => {
+            const match = /^mission(\d+)$/.exec(achievement.id || "");
+            return match ? Number(match[1]) : 0;
+        })
+        .filter(threshold => threshold > 0 && threshold < next.threshold)
+        .reduce((max, threshold) => Math.max(max, threshold), 0);
+    const progress = next.threshold > previousThreshold
+        ? Math.max(0, Math.min(100, ((completed - previousThreshold) / (next.threshold - previousThreshold)) * 100))
+        : 0;
+
+    if (nextCount) nextCount.textContent = `${needed} task${needed === 1 ? "" : "s"}`;
+    if (nextDetail) nextDetail.textContent = `${next.title} · ${completed} / ${next.threshold} missions`;
+    if (nextBar) nextBar.style.width = `${progress}%`;
+    if (nextTrack) {
+        nextTrack.setAttribute("aria-valuemax", String(next.threshold));
+        nextTrack.setAttribute("aria-valuenow", String(completed));
+    }
+}
+
+window.updateMissionProgressCounters = updateMissionProgressCounters;
+window.addEventListener("load", updateMissionProgressCounters);
 
 function showPopup(achievementText) {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];

@@ -1,4 +1,4 @@
-const CACHE_NAME = "standout-v2.6.2";
+const CACHE_NAME = "standout-v2.6.3";
 
 const FONT_AWESOME_CACHE =
   "standout-fontawesome-v1";

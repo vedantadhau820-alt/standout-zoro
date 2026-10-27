@@ -509,167 +509,118 @@
    CLAIM SEASON REWARD
 ===================================================== */
 
+
     function claimReward(level) {
 
-        const state =
-            loadState();
-
-        const reward =
-            SEASON.rewards[level];
+        const state = loadState();
+        const reward = SEASON.rewards[level];
 
         if (!reward) {
-
-            console.warn(
-                "Season reward does not exist:",
-                level
-            );
-
+            console.warn("Season reward does not exist:", level);
             return false;
-
         }
 
+        const rewardState = state.rewards[level];
 
-        const rewardState =
-            state.rewards[level];
-
-
-        /* =================================================
-           VALIDATION
-        ================================================= */
-
-        if (
-            !rewardState ||
-            !rewardState.unlocked
-        ) {
-
-            console.warn(
-                "Season reward is locked:",
-                level
-            );
-
+        if (!rewardState || !rewardState.unlocked) {
+            console.warn("Season reward is locked:", level);
             return false;
-
         }
 
+        const isCardReward =
+            reward.type === "card" ||
+            reward.type === "exclusive-card";
 
+        /*
+         * Allow recovery if a reward was marked claimed
+         * but its card was never saved.
+         */
         if (rewardState.claimed) {
 
-            console.warn(
-                "Season reward already claimed:",
-                level
-            );
+            if (!isCardReward) {
+                console.warn("Season reward already claimed:", level);
+                return false;
+            }
 
-            return false;
+            let existingCards = {};
 
-        }
-
-
-        /* =================================================
-           CARD REWARD
-        ================================================= */
-
-        /* =================================================
-   IMPROVEMENT POINT REWARD
-================================================= */
-
-        if (reward.type === "improvement-points") {
-
-            const amount =
-                Number(reward.amount) || 0;
-
-            if (amount <= 0) {
-
-                console.warn(
-                    "Invalid Improvement Point reward:",
-                    amount
+            try {
+                existingCards = JSON.parse(
+                    localStorage.getItem("ownedCards") || "{}"
                 );
 
+                if (
+                    !existingCards ||
+                    typeof existingCards !== "object" ||
+                    Array.isArray(existingCards)
+                ) {
+                    existingCards = {};
+                }
+            } catch (error) {
+                console.error("Could not read owned cards:", error);
                 return false;
             }
 
             if (
-                typeof window.addImprovementPoints !==
-                "function"
+                Object.prototype.hasOwnProperty.call(
+                    existingCards,
+                    reward.id
+                )
             ) {
-
-                console.error(
-                    "Improvement Point system unavailable."
-                );
-
-                return false;
+                console.log("Season card is already saved:", reward.id);
+                return true;
             }
-
-
-            /*
-             * Give the reward first.
-             */
-            window.addImprovementPoints(amount);
-
-
-            /* =================================================
-               REWARD SOUND
-            ================================================= */
-
-            if (
-                typeof window.playAppTone ===
-                "function"
-            ) {
-
-                window.playAppTone(
-                    "achievement"
-                );
-
-            } else {
-
-                console.warn(
-                    "Reward sound system unavailable."
-                );
-
-            }
-
 
             console.log(
-                `🎁 +${amount} Improvement Points`
+                "Recovering missing Season card:",
+                reward.id
             );
         }
 
-        if (
-            reward.type === "card" ||
-            reward.type === "exclusive-card"
-        ) {
+        /*
+         * Improvement Points
+         */
+        if (reward.type === "improvement-points") {
 
-            if (
-                typeof window.cardCatalog ===
-                "undefined"
-            ) {
+            const amount = Number(reward.amount) || 0;
 
-                console.error(
-                    "Card catalog is unavailable."
-                );
-
+            if (amount <= 0) {
+                console.error("Invalid Improvement Point reward:", amount);
                 return false;
-
             }
 
+            if (typeof window.addImprovementPoints !== "function") {
+                console.error("Improvement Point system unavailable.");
+                return false;
+            }
 
-            const card =
-                window.cardCatalog.find(
-                    c =>
-                        c.id === reward.id
-                );
+            window.addImprovementPoints(amount);
 
+            if (typeof window.playAppTone === "function") {
+                window.playAppTone("achievement");
+            }
+
+            console.log(`🎁 +${amount} Improvement Points`);
+        }
+
+        /*
+         * Season Card
+         */
+        else if (isCardReward) {
+
+            if (!Array.isArray(window.cardCatalog)) {
+                console.error("Card catalog is unavailable.");
+                return false;
+            }
+
+            const card = window.cardCatalog.find(
+                item => item.id === reward.id
+            );
 
             if (!card) {
-
-                console.error(
-                    "Season card not found:",
-                    reward.id
-                );
-
+                console.error("Season card not found:", reward.id);
                 return false;
-
             }
-
 
             let latestOwnedCards = {};
 
@@ -677,318 +628,174 @@
                 latestOwnedCards = JSON.parse(
                     localStorage.getItem("ownedCards") || "{}"
                 );
+
+                if (
+                    !latestOwnedCards ||
+                    typeof latestOwnedCards !== "object" ||
+                    Array.isArray(latestOwnedCards)
+                ) {
+                    latestOwnedCards = {};
+                }
             } catch (error) {
                 console.error("Failed to load owned cards:", error);
                 return false;
             }
 
+            const alreadyOwned =
+                Object.prototype.hasOwnProperty.call(
+                    latestOwnedCards,
+                    reward.id
+                );
 
             /*
-             * Already owned?
+             * Add card only when it is missing.
              */
+            if (!alreadyOwned) {
 
-            if (
-                ownedCards[reward.id]
-            ) {
+                latestOwnedCards[reward.id] = {
+                    mintedAt:
+                        typeof getISTDate === "function"
+                            ? getISTDate().toISOString().slice(0, 10)
+                            : new Date().toISOString().slice(0, 10),
 
-                rewardState.claimed = true;
+                    source: "season",
+                    seasonId: SEASON.id,
+                    seasonLevel: level
+                };
 
-                rewardState.claimedAt =
-                    new Date().toISOString();
+                try {
+                    localStorage.setItem(
+                        "ownedCards",
+                        JSON.stringify(latestOwnedCards)
+                    );
+                } catch (error) {
+                    console.error("Failed to save Season card:", error);
+                    return false;
+                }
 
-                saveState(state);
-
-                renderSeason();
-
-                return true;
+                console.log("Season card saved:", reward.id);
 
             }
 
-
             /*
-             * Season cards are FREE.
-             *
-             * Do NOT subtract Improvement Points.
+             * Synchronize in-memory collection.
              */
-
-            // Save the latest collection, including the new Season card.
-            localStorage.setItem(
-                "ownedCards",
-                JSON.stringify(latestOwnedCards)
-            );
-
-            // Synchronize the app's in-memory variable.
-            // app-part1.js declares ownedCards with `let`.
             if (typeof ownedCards !== "undefined") {
                 ownedCards = latestOwnedCards;
             }
 
-            // Keep the window property synchronized if it exists.
-            if (typeof window.ownedCards !== "undefined") {
-                window.ownedCards = latestOwnedCards;
-            }
-
-
-            localStorage.setItem(
-                "ownedCards",
-                JSON.stringify(
-                    ownedCards
-                )
-            );
-
+            window.ownedCards = latestOwnedCards;
 
             /*
-             * Keep app runtime state
-             * synchronized if available.
+             * Refresh card interfaces.
              */
-
-            if (
-                typeof window.ownedCards !==
-                "undefined"
-            ) {
-
-                window.ownedCards =
-                    ownedCards;
-
-            }
-
-
-            /*
-             * Refresh card UI.
-             */
-
-            if (
-                typeof renderMarketplace ===
-                "function"
-            ) {
-
+            if (typeof renderMarketplace === "function") {
                 renderMarketplace();
-
             }
 
-
-            if (
-                typeof renderMyCards ===
-                "function"
-            ) {
-
+            if (typeof renderMyCards === "function") {
                 renderMyCards();
-
             }
 
-            /* =================================================
-   SEASON CARD MINT EXPERIENCE
-================================================= */
-
-            if (
-                typeof window.showMintedCard ===
-                "function"
-            ) {
-
-                console.log(
-                    "🎬 SEASON CARD MINT TRIGGERED",
-                    card
-                );
-
-                window.showMintedCard(card);
-
-            } else {
-
-                console.warn(
-                    "Season card mint animation unavailable."
-                );
-
+            /*
+             * Mint animation only for a newly saved card.
+             */
+            if (!alreadyOwned) {
+                if (typeof window.showMintedCard === "function") {
+                    window.showMintedCard(card);
+                } else {
+                    console.warn("Season card mint animation unavailable.");
+                }
             }
-
         }
 
-
-        /* =================================================
-           BADGE REWARD
-        ================================================= */
-
-        else if (
-            reward.type === "badge"
-        ) {
-
-            /*
-             * Your badge system stores earned
-             * badges under "earnedBadges".
-             */
+        /*
+         * Badge Reward
+         */
+        else if (reward.type === "badge") {
 
             let earnedBadges = [];
 
             try {
-
-                earnedBadges =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "earnedBadges"
-                        ) || "[]"
-                    );
-
-            } catch (error) {
-
-                console.warn(
-                    "Could not read earned badges:",
-                    error
+                earnedBadges = JSON.parse(
+                    localStorage.getItem("earnedBadges") || "[]"
                 );
 
-                earnedBadges = [];
-
+                if (!Array.isArray(earnedBadges)) {
+                    earnedBadges = [];
+                }
+            } catch (error) {
+                console.error("Could not load earned badges:", error);
+                return false;
             }
 
-
-            /*
-             * Prevent duplicate badge.
-             */
-
-            const alreadyOwned =
-                earnedBadges.some(
-                    badge =>
-                        badge.id ===
-                        reward.id
-                );
-
+            const alreadyOwned = earnedBadges.some(
+                badge => badge.id === reward.id
+            );
 
             if (!alreadyOwned) {
 
                 earnedBadges.push({
-
-                    id:
-                        reward.id,
-
-                    title:
-                        reward.title,
-
-                    artwork:
-                        "",
-
-                    month:
-                        "Season 01",
-
-                    earnedAt:
-                        typeof getISTDate ===
-                            "function"
-
-                            ? getISTDate()
-                                .toISOString()
-
-                            : new Date()
-                                .toISOString(),
-
-                    source:
-                        "season",
-
-                    seasonId:
-                        SEASON.id,
-
-                    seasonLevel:
-                        level
-
+                    id: reward.id,
+                    title: reward.title,
+                    artwork: "",
+                    month: SEASON.name,
+                    earnedAt: new Date().toISOString(),
+                    source: "season",
+                    seasonId: SEASON.id,
+                    seasonLevel: level
                 });
-
 
                 localStorage.setItem(
                     "earnedBadges",
-                    JSON.stringify(
-                        earnedBadges
-                    )
+                    JSON.stringify(earnedBadges)
                 );
-
             }
 
-
-            /*
-             * Refresh badge UI if available.
-             */
-
-            if (
-                typeof renderBadges ===
-                "function"
-            ) {
-
+            if (typeof renderBadges === "function") {
                 renderBadges();
-
             }
-
         }
 
+        /*
+         * Achievement Reward
+         */
+        else if (reward.type === "achievement") {
 
-        /* =================================================
-           ACHIEVEMENT REWARD
-        ================================================= */
-
-        else if (
-            reward.type === "achievement"
-        ) {
-
-            if (
-                typeof window.unlockAchievement ===
-                "function"
-            ) {
-
-                window.unlockAchievement(
-                    reward.id
-                );
-
-            } else {
-
-                console.warn(
-                    "Achievement system unavailable:",
-                    reward.id
-                );
-
+            if (typeof window.unlockAchievement !== "function") {
+                console.error("Achievement system unavailable:", reward.id);
                 return false;
-
             }
 
+            window.unlockAchievement(reward.id);
         }
 
-
-        /* =================================================
-           MARK CLAIMED
-        ================================================= */
-
-        rewardState.claimed =
-            true;
-
+        /*
+         * Mark reward claimed and save Season progress.
+         */
+        rewardState.claimed = true;
         rewardState.claimedAt =
-            new Date().toISOString();
-
+            rewardState.claimedAt || new Date().toISOString();
 
         saveState(state);
 
-
         renderSeason();
-
 
         console.log(
             `🎁 Season Reward Claimed: Level ${level}`,
             reward.title
         );
 
-
-        /*
-         * User feedback.
-         */
-
-        if (
-            typeof window.showSmartNotification ===
-            "function"
-        ) {
-
+        if (typeof window.showSmartNotification === "function") {
             window.showSmartNotification(
                 "🎁 Reward Claimed",
                 reward.title
             );
-
         }
 
-
         return true;
-
     }
+
 
 
     /* =====================================================

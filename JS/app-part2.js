@@ -2759,6 +2759,10 @@ function unlockAchievement(id) {
         pushNotification("🏆 New Achievement", `You unlocked: "${ach.title}"`);
         showAchievementPopup(ach.title, ach.desc);
         renderAchievements();
+
+        if (typeof window.updateMissionProgressCounters === "function") {
+            window.updateMissionProgressCounters();
+        }
     }
 }
 
@@ -4200,6 +4204,10 @@ playAppTone("mission");
 
 
     saveData();
+
+    if (typeof window.updateMissionProgressCounters === "function") {
+        window.updateMissionProgressCounters();
+    }
 }
 
 

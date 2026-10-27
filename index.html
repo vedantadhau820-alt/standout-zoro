@@ -31,6 +31,79 @@
     <link rel="stylesheet" href="CSS/season.css">
     <link rel="stylesheet" href="CSS/mastery.css">
 
+
+    <style>
+        .improvement-points-line { margin: 3px 0 0; }
+
+        .mission-progress-counters {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            width: 100%;
+            margin: 8px 0 12px;
+        }
+
+        .mission-progress-card {
+            min-width: 0;
+            padding: 7px 9px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 9px;
+            background: rgba(148, 163, 184, 0.035);
+        }
+
+        .mission-progress-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .mission-progress-label {
+            color: var(--muted-text, #94a3b8);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.045em;
+        }
+
+        .mission-progress-count {
+            color: var(--primary, #3B82F6);
+            font-size: 11px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .mission-progress-track {
+            height: 3px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.16);
+        }
+
+        .mission-progress-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: #3B82F6;
+            transition: width 220ms ease;
+        }
+
+        .mission-progress-detail {
+            margin: 5px 0 0;
+            color: var(--muted-text, #94a3b8);
+            font-size: 9px;
+            line-height: 1.25;
+        }
+
+        @media (max-width: 420px) {
+            .mission-progress-counters { gap: 6px; margin-top: 7px; }
+            .mission-progress-card { padding: 6px 7px; border-radius: 8px; }
+            .mission-progress-label { font-size: 8px; }
+            .mission-progress-count { font-size: 10px; }
+            .mission-progress-detail { font-size: 8px; }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -195,10 +268,12 @@
             <div class="missions-title">
                 <h2>Missions</h2>
 
-                <p>
+                <p class="improvement-points-line">
                     Improvement Points:
                     <span id="missionCounter">0</span>
                 </p>
+
+
             </div>
 
             <div id="momentum-slot"></div>
@@ -243,6 +318,31 @@
 
         </div>
 
+
+        <!-- Compact progress counters below Daily Challenge -->
+            <div id="missionProgressCounters" class="mission-progress-counters" aria-live="polite">
+                <div class="mission-progress-card">
+                    <div class="mission-progress-card-top">
+                        <span class="mission-progress-label">DAILY POINT CAP</span>
+                        <span id="dailyCapCount" class="mission-progress-count">0 / 10</span>
+                    </div>
+                    <div class="mission-progress-track" role="progressbar" aria-label="Daily Improvement Point cap progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+                        <div id="dailyCapBar" class="mission-progress-fill"></div>
+                    </div>
+                    <p id="dailyCapRemaining" class="mission-progress-detail">10 tasks left to earn points</p>
+                </div>
+
+                <div class="mission-progress-card">
+                    <div class="mission-progress-card-top">
+                        <span class="mission-progress-label">NEXT ACHIEVEMENT</span>
+                        <span id="nextAchievementRemaining" class="mission-progress-count">—</span>
+                    </div>
+                    <div class="mission-progress-track" role="progressbar" aria-label="Next mission achievement progress" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+                        <div id="nextAchievementBar" class="mission-progress-fill"></div>
+                    </div>
+                    <p id="nextAchievementDetail" class="mission-progress-detail">Loading achievement progress...</p>
+                </div>
+            </div>
 
         <ul id="mission-list"></ul>
 

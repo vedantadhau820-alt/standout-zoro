@@ -1656,9 +1656,16 @@ image: "Images/SS14.jpg" },
    { id: "Endgame_Thor", title: "Thor - Ragnarock", grade: "w", quote: "God Of Thunder.", cost: 210, image: "Images/Endgame_Thor.gif", limited: true, expiresAt: "2026-09-30T23:29:30Z" },
    { id: "JJK_Sukuna", title: "Ryomen Sukuna", grade: "w", quote: "The King Of Curses.", cost: 200, image: "Images/JJK_Sukuna.gif", limited: true, expiresAt: "2026-10-31T23:29:30Z" },
    { id: "JJK_Gojo", title: "Saturo Gojo", grade: "w", quote: "I Am Alone Honoured One.", cost: 210, image: "Images/JJK_Gojo.gif", limited: true, expiresAt: "2026-10-31T23:29:30Z" },
-
+   { id: "Rama", title: "Shri Ram", grade: "w", quote: "Only Those Who DO Not Believe In Their Own Abilities Are Tested.", cost: 250, image: "Images/Rama.gif", limited: true, expiresAt: "2026-11-30T23:29:30Z" },
+   { id: "Ravana", title: "Ravan", grade: "w", quote: "No Force In The Universe Can Break My Will, I Bow Only To My Own Principles.", cost: 230, image: "Images/Ravana.gif", limited: true, expiresAt: "2026-11-30T23:29:30Z" },
+   { id: "Raje", title: "Raje", grade: "w", quote: "Dharmo Rakshati Rakshitah.", cost: 50, image: "Images/Raje.jpeg", limited: true, expiresAt: "2026-11-8T23:29:30Z" },
+   
    { id: "season_01_card", title: "The Ascension", quote: "You don't rise by chance. You rise by choice.", grade: "A", cost: 0, image: "assets/cards/season-01-ascension.png", limited: true, expiresAt: "2026-09-30T23:29:30Z", season: "season-01", seasonReward: true},
    { id: "season_01_exclusive_card", title: "Beyond Limits", quote: "The limit was never the wall. It was the belief.", grade: "S", cost: 0, image: "assets/cards/season-01-beyond-limits.png", limited: true, expiresAt: "2026-09-30T23:29:30Z", season: "season-01", seasonReward: true},
    { id: "season_02_card", title: "Domain Expansion", quote: "Power Resides Where We Believe It Resides.", grade: "S", cost: 0, image: "assets/cards/season-02-domain-expansion.png", limited: true, expiresAt: "2026-10-31T23:29:30Z", season: "season-02", seasonReward: true},
    { id: "season_02_exclusive_card", title: "The Cursed Awakening", quote: "A Different World Lies Within.", grade: "S", cost: 0, image: "assets/cards/season-02-the-cursed-awakening.png", limited: true, expiresAt: "2026-10-31T23:29:30Z", season: "season-02", seasonReward: true},
-      ];
+   { id: "season_03_card", title: "Jatayu", quote: "Always Follow Your Dharma, Even If Death Standing Against You.", grade: "S", cost: 0, image: "assets/cards/season-02-Jatayu.jpeg", limited: true, expiresAt: "2026-11-30T23:29:30Z", season: "season-03", seasonReward: true},
+   { id: "season_03_exclusive_card", title: "Sita Maa", quote: "Never Lose Hope.", grade: "S", cost: 0, image: "assets/cards/season-03-Sitamaa.jpeg", limited: true, expiresAt: "2026-11-30T23:29:30Z", season: "season-03", seasonReward: true},
+   
+
+];

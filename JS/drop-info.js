@@ -22,7 +22,7 @@
     const DROP_DATA = {
 
         name:
-            "THE CURSED ERA",
+            "THE ETERNAL DHARM",
 
         description:
             "A new month. A new challenge."

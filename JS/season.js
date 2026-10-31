@@ -12,21 +12,21 @@
        SEASON CONFIG
     ===================================================== */
 
-    const SEASON = {
+   const SEASON = {
 
-        id: "season-02",
+        id: "season-03",
 
-        number: 2,
+        number: 3,
 
-        name: "The Cursed Era",
+        name: "The Eternal Dharm",
 
         /*
          * TESTING START DATE
          * Change back to September 1 for production.
          */
-        start: "2026-10-01T00:00:00+05:30",
+        start: "2026-11-01T00:00:00+05:30",
 
-        end: "2026-10-31T23:59:59+05:30",
+        end: "2026-11-30T23:59:59+05:30",
 
         maxLevel: 20,
 
@@ -41,26 +41,26 @@
 
             5: {
                 type: "improvement-points",
-                amount: 120,
+                amount: 180,
                 title: "100 Improvement Points"
             },
 
             10: {
                 type: "improvement-points",
-                amount: 220,
+                amount: 250,
                 title: "200 Improvement Points"
             },
 
             15: {
                 type: "card",
-                id: "season_02_card",
-                title: "Domain Expansion"
+                id: "season_03_card",
+                title: "Jatayu"
             },
 
             20: {
                 type: "exclusive-card",
-                id: "season_02_exclusive_card",
-                title: "The Cursed Awakening"
+                id: "season_03_exclusive_card",
+                title: "Sita Maa"
             }
 
         }

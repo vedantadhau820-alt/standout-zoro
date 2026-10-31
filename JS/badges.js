@@ -81,7 +81,31 @@ const MONTHLY_BADGES = {
 
         }
 
-    }
+    },
+
+   /* -----------------------------------------------------
+       November 2026
+    ----------------------------------------------------- */
+
+    "2026-11": {
+
+        id: "nov-2026",
+
+        title: "The Eternal Dharm",
+
+        artwork: "badges/nov-2026.png",
+
+        requirements: {
+
+            missions: 108,
+
+            goals: 3,
+
+            activeDays: 21
+
+        }
+
+    },
 
 };
 

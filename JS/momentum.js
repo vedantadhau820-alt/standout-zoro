@@ -339,104 +339,64 @@
        DATE
     ========================================================= */
 
+    // Accept ISO (YYYY-MM-DD) and legacy US (MM/DD/YYYY) date keys.
+    // Always return ISO so all new Momentum records use one format.
+    function normalizeDateKey(value) {
+
+        if (typeof value !== "string" || !value.trim()) return null;
+
+        const input = value.trim();
+        let year, month, day;
+        let match = input.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+
+        if (match) {
+            [, year, month, day] = match;
+        } else {
+            match = input.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (!match) return null;
+            [, month, day, year] = match;
+        }
+
+        const y = Number(year), mo = Number(month), d = Number(day);
+        const date = new Date(Date.UTC(y, mo - 1, d));
+        if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo - 1 || date.getUTCDate() !== d) return null;
+
+        return `${String(y).padStart(4, "0")}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    }
+
+
     function today() {
 
-        /*
-         * Developer testing date.
-         */
-
-        if (
-            momentumTestDate
-        ) {
-
-            return momentumTestDate;
-
+        if (momentumTestDate) {
+            return normalizeDateKey(momentumTestDate) || momentumTestDate;
         }
-
-
-        /*
-         * Use application's date
-         * function when available.
-         */
 
         try {
-
-            if (
-                typeof window.getTodayKey ===
-                "function"
-            ) {
-
-                return window.getTodayKey();
-
+            if (typeof window.getTodayKey === "function") {
+                const appDate = normalizeDateKey(window.getTodayKey());
+                if (appDate) return appDate;
             }
+        } catch (_) { }
 
-        }
-
-        catch (_) { }
-
-
-        /*
-         * Fallback to IST.
-         */
-
-        return new Intl.DateTimeFormat(
-
-            "en-CA",
-
-            {
-
-                timeZone:
-                    "Asia/Kolkata",
-
-                year:
-                    "numeric",
-
-                month:
-                    "2-digit",
-
-                day:
-                    "2-digit"
-
-            }
-
-        ).format(
-            new Date()
-        );
+        return new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).format(new Date());
 
     }
 
 
-    function daysBetween(
-        first,
-        second
-    ) {
+    function daysBetween(first, second) {
 
-        if (
-            !first ||
-            !second
-        ) {
+        const firstKey = normalizeDateKey(first);
+        const secondKey = normalizeDateKey(second);
+        if (!firstKey || !secondKey) return 0;
 
-            return 0;
-
-        }
-
-
-        const a =
-            new Date(
-                `${first}T00:00:00`
-            );
-
-
-        const b =
-            new Date(
-                `${second}T00:00:00`
-            );
-
-
-        return Math.round(
-            (b - a) /
-            86400000
-        );
+        const a = Date.parse(`${firstKey}T00:00:00.000Z`);
+        const b = Date.parse(`${secondKey}T00:00:00.000Z`);
+        return Math.round((b - a) / 86400000);
 
     }
 
@@ -2308,11 +2268,12 @@
                 state.lastCheckDate
             ) {
 
-                startDate =
-                    new Date(
-                        state.lastCheckDate +
-                        "T12:00:00"
-                    );
+                const normalizedLastCheck =
+                    normalizeDateKey(state.lastCheckDate);
+
+                startDate = normalizedLastCheck
+                    ? new Date(`${normalizedLastCheck}T12:00:00.000Z`)
+                    : new Date();
 
             }
 
@@ -2336,9 +2297,7 @@
 
 
             momentumTestDate =
-                startDate
-                    .toISOString()
-                    .slice(0, 10);
+                `${startDate.getUTCFullYear()}-${String(startDate.getUTCMonth() + 1).padStart(2, "0")}-${String(startDate.getUTCDate()).padStart(2, "0")}`;
 
 
             /*

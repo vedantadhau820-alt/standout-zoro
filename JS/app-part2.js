@@ -11,7 +11,7 @@ function calculateMissionTypePerformance(year, month) {
         hardcore: 0,
         recurring: 0,
         oneTime: 0
-    };
+    }; 
 
     Object.keys(missionHistory)
         .filter(date =>
@@ -320,24 +320,54 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeMonthlyReportSelector();
 });
 
+// Normalize legacy MM/DD/YYYY keys for reporting without modifying stored history.
+function normalizeMonthlyMomentumEntries(history) {
+    const byDate = new Map();
+
+    Object.entries(history || {}).forEach(([rawDate, data]) => {
+        let date = null;
+        let match = rawDate.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (match) {
+            const [, y, m, d] = match;
+            const parsed = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+            if (parsed.getUTCFullYear() === Number(y) && parsed.getUTCMonth() === Number(m) - 1 && parsed.getUTCDate() === Number(d)) {
+                date = `${y}-${String(Number(m)).padStart(2, "0")}-${String(Number(d)).padStart(2, "0")}`;
+            }
+        } else {
+            match = rawDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (match) {
+                const [, m, d, y] = match;
+                const parsed = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+                if (parsed.getUTCFullYear() === Number(y) && parsed.getUTCMonth() === Number(m) - 1 && parsed.getUTCDate() === Number(d)) {
+                    date = `${y}-${String(Number(m)).padStart(2, "0")}-${String(Number(d)).padStart(2, "0")}`;
+                }
+            }
+        }
+        if (!date) return;
+
+        const candidate = {
+            date,
+            momentum: Number(data?.momentum) || 0,
+            energy: data?.energy == null ? null : Number(data.energy)
+        };
+        const existing = byDate.get(date);
+
+        // If old and new formats contain the same day, report one snapshot:
+        // retain the higher momentum value; on a tie prefer a known energy value.
+        if (!existing || candidate.momentum > existing.momentum ||
+            (candidate.momentum === existing.momentum && existing.energy == null && candidate.energy != null)) {
+            byDate.set(date, candidate);
+        }
+    });
+
+    return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
 function getMonthlyMomentumHistory(year, month) {
-
-    const history = Momentum.getHistory();
-
-    const prefix =
-        `${year}-${String(month + 1).padStart(2, "0")}`;
-
-    return Object.entries(history)
-        .filter(([date]) =>
-            date.startsWith(prefix)
-        )
-        .map(([date, data]) => ({
-            date: date,
-            momentum: Number(data.momentum) || 0
-        }))
-        .sort((a, b) =>
-            a.date.localeCompare(b.date)
-        );
+    const prefix = `${year}-${String(month + 1).padStart(2, "0")}`;
+    return normalizeMonthlyMomentumEntries(Momentum.getHistory())
+        .filter(item => item.date.startsWith(prefix))
+        .map(({ date, momentum }) => ({ date, momentum }));
 }
 
 function generateMonthlyInsights(year, month) {
@@ -490,18 +520,9 @@ function calculateMonthlyMomentum(year, month) {
     const prefix =
         `${year}-${String(month + 1).padStart(2, "0")}`;
 
-    const history =
-        Momentum.getHistory();
-
     const entries =
-        Object.entries(history)
-            .filter(([date]) =>
-                date.startsWith(prefix)
-            )
-            .sort(
-                ([a], [b]) =>
-                    a.localeCompare(b)
-            );
+        normalizeMonthlyMomentumEntries(Momentum.getHistory())
+            .filter(item => item.date.startsWith(prefix));
 
 
     const result = {
@@ -523,15 +544,11 @@ function calculateMonthlyMomentum(year, month) {
     ========================= */
 
     result.history =
-        entries.map(
-            ([date, data]) => ({
-                date,
-                momentum:
-                    Number(data.momentum) || 0,
-                energy:
-                    Number(data.energy) || 0
-            })
-        );
+        entries.map(item => ({
+            date: item.date,
+            momentum: item.momentum,
+            energy: item.energy
+        }));
 
 
     /* =========================
@@ -1449,22 +1466,15 @@ function renderMonthlyMomentumChart(year, month) {
 
 function getMonthlyEnergyHistory(year, month) {
 
-    const history = Momentum.getHistory();
-
     const prefix =
         `${year}-${String(month + 1).padStart(2, "0")}`;
 
-    return Object.entries(history)
-        .filter(([date]) =>
-            date.startsWith(prefix)
-        )
-        .map(([date, data]) => ({
-            date: date,
-            energy: Number(data.energy) || 0
-        }))
-        .sort((a, b) =>
-            a.date.localeCompare(b.date)
-        );
+    return normalizeMonthlyMomentumEntries(Momentum.getHistory())
+        .filter(item => item.date.startsWith(prefix) && item.energy != null)
+        .map(item => ({
+            date: item.date,
+            energy: item.energy
+        }));
 }
 /* =========================================================
    MONTHLY REPORT — MOMENTUM JOURNEY UI
@@ -4302,12 +4312,12 @@ function getRepeatKey(date = new Date(), repeat = "daily") {
 
 function refreshRecurringMissions() {
 
-    // Process expired deadlines before resetting recurring missions.
+   // Process expired deadlines before resetting recurring missions.
     if (typeof checkMissedDeadlines === "function") {
         checkMissedDeadlines();
     }
 
-    
+
     const missions =
         document.querySelectorAll(
             "#mission-list li"
@@ -4465,4 +4475,3 @@ function resetRecurringMission(li, currentKey) {
 /* =========================================================
    UPDATE DAILY DEADLINE
 ========================================================= */
-
